@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+.vehicle {
+  stroke: #000;
+  stroke-width: 1.5px;
+  fill: #000;
+  fill-opacity: 0.5;
+}
+</style>
+
+<body>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.1.1/d3.min.js"></script>
+<script>
+var width = 800;
+var height = 600;
+
+var maxVelocity = 4;
+var numVehicles = 8;
+
+var vehicles_data = Array.apply(null, Array(numVehicles)).map(function (_, i) {
+  return {
+    x: Math.random() * width,
+    y: Math.random() * height,
+    vx: 0,
+    vy: 0,
+    vl: Math.random()*0.6 - 0.3,
+    vr: Math.random()*0.6 - 0.3,
+    ang: 0,
+    w: 60,
+    h: 40
+  };
+});
+
+var drag = d3.drag()
+    .on('start', dragStarted)
+    .on('drag', dragged)
+    .on('end', dragEnded);
+
+var svg = d3.select('body').append('svg')
+    .attr('width', width)
+    .attr('height', height);
+
+var vehicles = svg.selectAll('vehicle')
+  .data(vehicles_data)
+  .enter().append('g')
+    .attr('class', 'vehicle')
+    .attr('transform', function(d) { return "translate(" + d.x + "," + d.y + ") rotate(" + d.ang + ")"; })
+    .call(drag);
+
+vehicles.append('rect')
+    .attr('width', function(d) { return d.w; })
+    .attr('height', function(d) { return d.h; })
+    .attr('x', function(d) {return -d.w/2; })
+    .attr('y', function(d) {return -d.h/2; });
+
+vehicles.append('line')
+    .attr('x1', 0)
+    .attr('x2', function(d) { return d.w/2;})
+
+
+//var collisionForce = polygonCollide();
+//var motor = motorForce();
+
+var simulation = d3.forceSimulation()
+    .velocityDecay(0)
+    .alphaTarget(1)
+    .on('tick', ticked)
+    //.force('box', boxForce)
+    .force('motor', motorForce())
+    .force('collision', polygonCollide())
+    .force('bounds', boundsForce().bounds({x: 0, y: 0, width: width, height: height}))
+    .nodes(vehicles_data)
+
+function ticked() {
+  // will get called after each tick
+
+  vehicles.each(function(d) {
+    d.vr += (Math.random()*0.1 - 0.05) //* d.vr;
+    d.vl += (Math.random()*0.1 - 0.05) //* d.vl;
+  })
+
+  vehicles.attr("transform", function(d) {
+    return "translate(" + d.x + "," + d.y + ") rotate(" + (d.ang * 180 / Math.PI) + ")";
+  })
+}
+
+function vehiclePoints(d) {
+  // returns an array containing the four vertices of the vehicle
+  wh = d.w * 0.5;
+  hh = d.h * 0.5;
+  sinAng = Math.sin(d.ang);
+  cosAng = Math.cos(d.ang);
+  // 1    0
+  // 2    3
+  points = [[wh, hh], [-wh, hh], [-wh, -hh], [wh, -hh]];
+  points = points.map(function(p) {
+    return [p[0] * cosAng - p[1] * sinAng + d.x, p[0] * sinAng + p[1] * cosAng + d.y];
+  })
+  return points;
+}
+
+function bboxOfPoints(points) {
+  // returns the bounding box of an array of points
+  minX = width;
+  minY = height;
+  maxX = 0;
+  maxY = 0;
+  points.forEach(function(p) {
+    minX = Math.min(minX, p[0]);
+    minY = Math.min(minY, p[1]);
+    maxX = Math.max(maxX, p[0]);
+    maxY = Math.max(maxY, p[1]);
+  })
+  return {x: minX, y: minY, width: maxX-minX, height: maxY-minY};
+}
+
+function combineBBoxes(box1, box2) {
+  // returns the bounding box containing both boxes
+  var x = Math.min(box1.x, box2.x),
+      y = Math.min(box1.y, box2.y),
+      width = x + Math.max(box1.x + box1.width, box2.x + box2.width),
+      height = y + Math.max(box1.y + box1.height, box2.y + box2.height);
+  return {x: x, y: y, width: width, height: height}
+}
+
+// DRAGGING
+var px, py, vx, vy, offsetX, offsetY
+function dragStarted(d) {
+    vx = d.vx = 0.
+    vy = d.vy = 0.
+    offsetX = (px = d3.event.x) - (d.fx = d.x)
+    offsetY = (py = d3.event.y) - (d.fy = d.y)
+}
+function dragged(d) {
+    vx = (d3.event.x - px)
+    vy = (d3.event.y - py)
+    d.fx = Math.max(Math.min((px = d3.event.x) - offsetX, width - d.bbox.width/2), 0)
+    d.fy = Math.max(Math.min((py = d3.event.y) - offsetY, height - d.bbox.height/2), 0)
+}
+function dragEnded(d) {
+    var vScalingFactor = maxVelocity / Math.max(Math.sqrt(vx * vx + vy * vy), maxVelocity)
+    d.fx = null
+    d.fy = null
+    d.vx = vx * vScalingFactor
+    d.vy = vy * vScalingFactor
+}
+
+function motorForce() {
+  // convert the velocities of the motors (vl and vr) into standard velocities (vx and vy)
+  // adjust the angle of the vehicle
+  var nodes;
+
+  function force() {
+    nodes.forEach(function(d) {
+      vDiff = d.vr - d.vl;
+      angDiff = Math.atan(vDiff / d.w);
+      vAbs = Math.abs(d.vl + d.vr);
+      d.ang = (d.ang + angDiff) % 360.;
+      d.vx = vAbs * Math.cos(d.ang);
+      d.vy = vAbs * Math.sin(d.ang);
+    });
+  }
+
+  force.initialize = function(_) {
+    nodes = _;
+  };
+
+  return force;
+}
+
+function boundsForce() {
+  var nodes,
+      bbox,
+      strength=1.;
+
+  function force() {
+    nodes.forEach(function(d) {
+      var points = vehiclePoints(d);
+      for (var i = 0; i < points.length; i++) {
+        var dist = 0
+        if ((dist = bbox.x - points[i][0]) > 0) {
+          d.vx += dist * strength;
+        }
+        if ((dist = points[i][0] - bbox.x - bbox.width) > 0) {
+          d.vx -= dist * strength;
+        }
+        if ((dist = bbox.y - points[i][1]) > 0) {
+          d.vy += dist * strength;
+        }
+        if ((dist = points[i][1] - bbox.y - bbox.height) > 0) {
+          d.vy -= dist * strength;
+        }
+      }
+    });
+  }
+
+  force.bounds = function(_) {
+    if (arguments.length == 1) {
+      bbox = _
+      return force;
+    } else {
+      return bbox;
+    }
+  };
+
+  force.initialize = function(_) {
+    nodes = _;
+  };
+
+  return force;
+}
+
+function polygonCollide() {
+  // calculate simple collisions between convex polygons
+  var iterations = 1,
+      strength = 0.1,
+      nodes;
+
+  function force() {
+    var i, n = nodes.length,
+        tree,
+        node,
+        nodePoints,
+        xi,
+        yi,
+        wi,
+        hi;
+
+    for (var k = 0; k < iterations; ++k) {
+      // create quadtree
+      tree = d3.quadtree()
+          .x(function(d) { return d.x; })
+          .y(function(d) { return d.y; })
+          .addAll(nodes)
+          .visitAfter(prepare);
+
+      // calculate collision for each node
+      for (i = 0; i < n; ++i) {
+        node = nodes[i];
+        nodePoints = vehiclePoints(node);
+        xi = node.x + node.vx;
+        yi = node.y + node.vy;
+        tree.visit(apply);
+      }
+    }
+
+    function apply(quad, x0, y0, x1, y1) {
+      var data = quad.data,
+          xSize = (quad.bbox.width * node.bbox.width) / 2,
+          ySize = (quad.bbox.height * node.bbox.height) / 2;
+
+      // if there is only one single data element in this quadrant
+      if (data) {
+        // skip collision with self
+        if (data.index <= node.index) {return}
+
+        dataPoints = vehiclePoints(data);
+        for(var i = 0; i < nodePoints.length; ++i) {
+          var overlap = Math.max(pointInPolygon(nodePoints[i], dataPoints),
+                                 pointInPolygon(dataPoints[i], nodePoints));
+          if (overlap > 0) {
+            var diffX = data.x - node.x;
+            var diffY = data.y - node.y;
+            var distance = Math.sqrt(diffX*diffX + diffY*diffY);
+            // normalized difference vector
+            var nx = diffX / distance;
+            var ny = diffY / distance;
+
+            // velocity orthogonal to the connecting line
+            var ovNode = node.vx * nx + node.vy * ny;
+            var ovData = data.vx * nx + data.vy * ny;
+
+            // velocity parallel to the connecting line
+            var pvNode = node.vx * ny - node.vy * nx;
+            var pvData = data.vx * ny - data.vy * nx;
+            var vColl = Math.abs(pvNode + pvData);
+            var s = strength * overlap;
+            node.vx = (ovNode * ny) - (vColl * nx) * s;
+            node.vy = (ovNode * -nx) - (vColl * ny) * s;
+            data.vx = (ovData * ny) + (vColl * nx) * s;
+            data.vy = (ovData * -nx) + (vColl * ny) * s;
+            break;
+          }
+        }
+        return;
+      }
+
+      // else there is not one single element in this quadrant
+      // visit only subquadrants where any part of the current node lies in this quad
+      // (no subquadrants are visited if this callback returns true)
+      return x0 > xi + xSize || y0 > yi + ySize ||
+             x1 < xi - xSize || y1 < yi - ySize;
+    }
+
+    function prepare(quad) {
+      // set the bounding box containing all data for this quadrant
+      if (quad.data) { // if there is one single data element in this quadrant
+        // set the bounding box of this quad as the same
+        var points = vehiclePoints(quad.data);
+        quad.bbox = quad.data.bbox = bboxOfPoints(points);
+      } else {
+        // set the bounding box to contain all elements of the subquadrants
+        quad.bbox = {x: width, y: height, width: 0, height: 0};
+        for (var i = quad.r = 0; i < 4; ++i) {
+          if (quad[i] && quad[i].bbox) {
+            quad.bbox = combineBBoxes(quad.bbox, quad[i].bbox);
+          }
+        }
+      }
+    }
+  }
+
+  force.initialize = function(_) {
+    nodes = _;
+    //initialize();
+  };
+
+  return force;
+}
+
+function pointInPolygon(point, vertices) {
+  // if the point lies outside, returns 0
+  // if the point lies in the polygon, returns the minimal distance to an edge
+  // only works for convex polygons
+  var distance = 10000;
+  // check if the point lies left of every edge (vertices have to be in counter-clockwise order)
+  for (i=0; i < vertices.length; i++) {
+    var p1 = vertices[i];
+    var p2 = vertices[(i+1) % vertices.length];
+    var a = -(p2[1] - p1[1]);
+    var b = p2[0] - p1[0];
+    var c = -(a * p1[0] + b * p1[1]);
+    var d = a * point[0] + b * point[1] + c;
+    if (d < 0) {
+      // point not left of edge, so the point lies outside the polygon
+      return 0;
+    } else {
+      d /= Math.sqrt(a*a + b*b);
+      if(d < distance) {
+        distance = d;
+      }
+    }
+  }
+  return distance;
+}
+
+
+</script>
