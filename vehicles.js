@@ -1,11 +1,65 @@
+class Vehicle {
+    constructor(opts) {
+        this.x = opts.x;
+        this.y = opts.y;
+        this.vx = 0;
+        this.vy = 0;
+        this.vl = opts.vl;
+        this.vr = opts.vr;
+        this.ang = opts.ang;
+        this.w = 60;
+        this.h = 80;
+    }
+
+    tick() {
+        var points = this.points();
+        var leftPos = points[0];
+        var rightPos = points[3];
+        var lightAtLeft = lightAtPosition(leftPos[0], leftPos[1]) * lightFactor;
+        var lightAtRight = lightAtPosition(rightPos[0], rightPos[1]) * lightFactor;
+
+        // motor wiring
+        this.vl = maxVelocity - lightAtRight;
+        this.vr = maxVelocity - lightAtLeft;
+
+        // noisy motion
+        this.vr += (Math.random()*noisyMotion - 0.5 * noisyMotion);
+        this.vl += (Math.random()*noisyMotion - 0.5 * noisyMotion);
+
+        // enforce max and min velocities
+        this.vr = Math.min(Math.max(this.vr, minVelocity), maxVelocity);
+        this.vl = Math.min(Math.max(this.vl, minVelocity), maxVelocity);
+    }
+
+    points() {
+        // returns an array containing the four vertices of the vehicle
+        var wh = this.w * 0.5;
+        var hh = this.h * 0.5;
+        var sinAng = Math.sin(this.ang);
+        var cosAng = Math.cos(this.ang);
+        // 1    0
+        // 2    3
+        var points = [[wh, hh], [-wh, hh], [-wh, -hh], [wh, -hh]];
+        var self = this;
+        points = points.map(function(p) {
+          return [p[0] * cosAng - p[1] * sinAng + self.x, p[0] * sinAng + p[1] * cosAng + self.y];
+        })
+        return points;
+    }
+}
+
 function createVehicles(data) {
     var drag = d3.drag()
         .on('start', vDragStarted)
         .on('drag',vDragged)
         .on('end', vDragEnded);
 
+    var vehicle_objects = data.map(function(d) {
+        return new Vehicle(d);
+    })
+
     var vehicles = svg.selectAll('vehicle')
-      .data(vehicles_data)
+      .data(vehicle_objects)
       .enter().append('g')
         .attr('class', 'vehicle')
         .attr('transform', function(d) { return "translate(" + d.x + "," + d.y + ") rotate(" + d.ang + ")"; })
@@ -37,23 +91,7 @@ function ticked() {
   // will get called after each tick
 
   vehicles.each(function(d) {
-    var points = vehiclePoints(d);
-    var leftPos = points[0];
-    var rightPos = points[3];
-    var lightAtLeft = lightAtPosition(leftPos[0], leftPos[1]) * lightFactor;
-    var lightAtRight = lightAtPosition(rightPos[0], rightPos[1]) * lightFactor;
-
-    // motor wiring
-    d.vl = maxVelocity - lightAtRight;
-    d.vr = maxVelocity - lightAtLeft;
-
-    // noisy motion
-    d.vr += (Math.random()*noisyMotion - 0.5 * noisyMotion); //* d.vr;
-    d.vl += (Math.random()*noisyMotion - 0.5 * noisyMotion); //* d.vl;
-
-    // enforce max and min velocities
-    d.vr = Math.min(Math.max(d.vr, minVelocity), maxVelocity);
-    d.vl = Math.min(Math.max(d.vl, minVelocity), maxVelocity);
+    d.tick();
   })
 
   vehicles.attr("transform", function(d) {
