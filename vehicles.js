@@ -9,6 +9,7 @@ class Vehicle {
         this.ang = opts.ang;
         this.w = 60;
         this.h = 80;
+        this.bbox = bboxOfPoints(this.points());
     }
 
     tick() {
@@ -29,6 +30,22 @@ class Vehicle {
         // enforce max and min velocities
         this.vr = Math.min(Math.max(this.vr, minVelocity), maxVelocity);
         this.vl = Math.min(Math.max(this.vl, minVelocity), maxVelocity);
+    }
+
+    dom() {
+        var domVehicle = d3.select(document.createElementNS(d3.namespaces.svg, 'g'));
+
+        domVehicle.append('rect')
+            .attr('width', this.w)
+            .attr('height', this.h)
+            .attr('x', -this.w/2)
+            .attr('y', -this.h/2);
+
+        domVehicle.append('line')
+            .attr('x1', 0)
+            .attr('x2', this.w/2);
+
+        return domVehicle.node();
     }
 
     points() {
@@ -60,20 +77,10 @@ function createVehicles(data) {
 
     var vehicles = svg.selectAll('vehicle')
       .data(vehicle_objects)
-      .enter().append('g')
+      .enter().append(function(d) { return d.dom(); })
         .attr('class', 'vehicle')
         .attr('transform', function(d) { return "translate(" + d.x + "," + d.y + ") rotate(" + d.ang + ")"; })
         .call(drag);
-
-    vehicles.append('rect')
-        .attr('width', function(d) { return d.w; })
-        .attr('height', function(d) { return d.h; })
-        .attr('x', function(d) {return -d.w/2; })
-        .attr('y', function(d) {return -d.h/2; });
-
-    vehicles.append('line')
-        .attr('x1', 0)
-        .attr('x2', function(d) { return d.w/2;})
 
     var simulation = d3.forceSimulation()
         .velocityDecay(0)
@@ -81,8 +88,12 @@ function createVehicles(data) {
         .on('tick', ticked)
         .force('motor', motorForce())
         .force('collision', polygonCollide())
-        .force('bounds', boundsForce().bounds({x: 0, y: 0, width: width, height: height}))
-        .nodes(vehicles_data)
+        .force('bounds', boundsForce().bounds({
+            x: margin,
+            y: margin,
+            width: width - 2*margin,
+            height: height - 2*margin}))
+        .nodes(vehicle_objects)
 
     return [vehicles, simulation];
 }
@@ -142,19 +153,4 @@ function motorForce() {
   };
 
   return force;
-}
-
-function vehiclePoints(d) {
-  // returns an array containing the four vertices of the vehicle
-  wh = d.w * 0.5;
-  hh = d.h * 0.5;
-  sinAng = Math.sin(d.ang);
-  cosAng = Math.cos(d.ang);
-  // 1    0
-  // 2    3
-  points = [[wh, hh], [-wh, hh], [-wh, -hh], [wh, -hh]];
-  points = points.map(function(p) {
-    return [p[0] * cosAng - p[1] * sinAng + d.x, p[0] * sinAng + p[1] * cosAng + d.y];
-  })
-  return points;
 }
