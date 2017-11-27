@@ -42,16 +42,12 @@ function ticked() {
     var rightPos = points[3];
     var lightAtLeft = lightAtPosition(leftPos[0], leftPos[1]) * lightFactor;
     var lightAtRight = lightAtPosition(rightPos[0], rightPos[1]) * lightFactor;
-
-    // motor wiring
     d.vl = maxVelocity - lightAtRight;
     d.vr = maxVelocity - lightAtLeft;
 
-    // noisy motion
     d.vr += (Math.random()*noisyMotion - 0.5 * noisyMotion); //* d.vr;
     d.vl += (Math.random()*noisyMotion - 0.5 * noisyMotion); //* d.vl;
 
-    // enforce max and min velocities
     d.vr = Math.min(Math.max(d.vr, minVelocity), maxVelocity);
     d.vl = Math.min(Math.max(d.vl, minVelocity), maxVelocity);
   })
