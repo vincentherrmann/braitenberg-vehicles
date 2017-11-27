@@ -16,8 +16,10 @@ class Vehicle {
         var points = this.points();
         var leftPos = points[0];
         var rightPos = points[3];
-        var lightAtLeft = lightAtPosition(leftPos[0], leftPos[1]) * lightFactor;
-        var lightAtRight = lightAtPosition(rightPos[0], rightPos[1]) * lightFactor;
+        var lightAtLeft = light.atPosition(leftPos[0], leftPos[1]);
+        var lightAtRight = light.atPosition(rightPos[0], rightPos[1])
+        // var lightAtLeft = lightAtPosition(leftPos[0], leftPos[1]) * lightFactor;
+        // var lightAtRight = lightAtPosition(rightPos[0], rightPos[1]) * lightFactor;
 
         // motor wiring
         this.vl = maxVelocity - lightAtRight;

@@ -15,6 +15,7 @@
 
 <body>
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.1.1/d3.min.js"></script>
+<script src="https://d3js.org/d3-hsv.v0.1.min.js"></script>
 <script src="collision.js"></script>
 <script src="vehicles.js"></script>
 <script src="environment.js"></script>
@@ -27,7 +28,7 @@ var width = 1200,
 var minVelocity = 0.,
     maxVelocity = 4.,
     numVehicles = 1,
-    numLights = 12,
+    numLights = 4,
     lightFactor = 100000.,
     lightDistance = 100.,
     noisyMotion = 0.1;
@@ -51,15 +52,23 @@ var lights_data = Array.apply(null, Array(numLights)).map(function (_, i) {
   return {
     x: Math.random() * width,
     y: Math.random() * height,
-    strength: Math.random() * 0.8 + 0.2
+    strength: Math.random() * 0.8 + 0.2,
+    distance: lightDistance
   }
 })
 
-var svg = d3.select('body').append('svg')
+var div = d3.select('body').append('div')
+    .attr('style', "position: relative");
+
+var canvas = d3.select('div').append('canvas')
+    .attr('style', "position:absolute; left: 0px, top:0px; z-index: 2;")
+
+var svg = d3.select('div').append('svg')
+    .attr('style', "position:absolute; left: 0px, top:0px; z-index: 2;")
     .attr('width', width)
-    .attr('height', height);
+    .attr('height', height)
 
 var [vehicles, simulation] = createVehicles(vehicles_data);
-var lights = createCircularLight(lights_data);
+var [light, lights] = createCircularLight(lights_data);
 
 </script>
