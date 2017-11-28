@@ -14,16 +14,6 @@ function createCircularLight(data) {
   return [light, lights];
 }
 
-function circleDragged(d) {
-	d.x = d3.event.x;
-	d.y = d3.event.y;
-	d3.select(this)
-			.attr("transform", "translate(" + d.x + ", " + d.y + ")");
-    // d3.select(this)
-    //     .attr("cx", d.x = d3.event.x)
-    //     .attr("cy", d.y = d3.event.y)
-}
-
 function lightAtPosition(x, y) {
   var light = 0;
   lights_data.forEach(function(d) {
@@ -105,11 +95,11 @@ class CircularSource {
   }
 
 	drag(d) {
-		this.x = d3.event.x;
-		this.y = d3.event.y;
+		d.x = d3.event.x;
+		d.y = d3.event.y;
 
 		d3.select(this)
-				.attr("transform", "translate(" + this.x + ", " + this.y + ")");
+				.attr("transform", "translate(" + d.x + ", " + d.y + ")");
 	}
 
   dom() {

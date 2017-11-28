@@ -32,8 +32,8 @@ var minVelocity = 0.,
     maxVelocity = 4.,
     numVehicles = 1,
     numLights = 4,
-    lightFactor = 1000.,
-    lightDistance = 1000.,
+    lightFactor = 100.,
+    lightDistance = 200.,
     noisyMotion = 0.1;
 
 var vehicles_data = Array.apply(null, Array(numVehicles)).map(function (_, i) {
@@ -57,7 +57,7 @@ var lights_data = Array.apply(null, Array(numLights)).map(function (_, i) {
   return {
     x: Math.random() * width,
     y: Math.random() * height,
-    strength: Math.random() * 2000 + 500,
+    strength: Math.random() * 1000 + 300,
     distance: lightDistance,
     id: "light" + lightsNumber
   }

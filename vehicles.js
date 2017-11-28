@@ -22,8 +22,8 @@ class Vehicle {
         // var lightAtRight = lightAtPosition(rightPos[0], rightPos[1]) * lightFactor;
 
         // motor wiring
-        this.vl = maxVelocity - lightAtRight;
-        this.vr = maxVelocity - lightAtLeft;
+        this.vl = lightAtRight;
+        this.vr = lightAtLeft;
 
         // noisy motion
         this.vr += (Math.random()*noisyMotion - 0.5 * noisyMotion);
