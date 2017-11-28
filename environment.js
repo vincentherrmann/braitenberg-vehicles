@@ -14,13 +14,6 @@ function createCircularLight(data) {
       .attr('class', 'light')
       .call(lightDrag);
 
-  light.heatmap();
-
-  // var lightCanvas = d3.select('environment')
-  //   .data([light])
-  //   .enter().append(function(d) { return d.heatmap(); })
-  //     .attr('class', 'lightCanvas')
-
   return [light, lights];
 }
 
@@ -54,36 +47,6 @@ class Feature {
     }
     return value * this.scale;
   }
-
-  heatmap() {
-    //var canvas = d3.select(document.createElementNS(d3.namespaces.html, 'canvas'))
-    var canvas = d3.select("canvas")
-        .attr("width", width)
-        .attr("height", height)
-    var stride = 5;
-
-    var canvasNode = canvas.node();
-    var context = canvas.node().getContext("2d");
-    var image = context.createImageData(width / stride, height / stride);
-
-    var hueInterp = d3.interpolateHsvLong(d3.hsv(120, 1, 0.65), d3.hsv(60, 1, 0.90)),
-        color = d3.scaleSequential(hueInterp).domain([0., 1.]);
-
-    for (var i = 0, l = 0; i < width/stride; ++i) {
-      for (var j = 0; j < height/stride; ++j, l+=4 ) {
-        //var c = d3.rgb(color(this.atPosition(i*stride, j*stride)));
-        var c = d3.rgb(color(i*j * 0.001))
-        //console.log('position ', i*stride, j*stride, l);
-        image.data[l + 0] = c.r;
-        image.data[l + 1] = c.g;
-        image.data[l + 2] = c.b;
-        image.data[l + 3] = 255;
-      }
-    }
-
-    context.putImageData(image, 0, 0);
-    return canvas.node();
-  }
 }
 
 class CircularSource {
@@ -92,6 +55,30 @@ class CircularSource {
     this.y = opts.y;
     this.strength = opts.strength;
     this.distance = opts.distance;
+    this.id = opts.id;
+    this.createGradient();
+  }
+
+  createGradient() {
+    var gradient = defs.append("radialGradient")
+        .attr("id", "gradient_" + this.id)
+        .attr("r", "100%");
+
+    var self = this
+    var valueAt0 = this.strength / this.distance;
+    var stops = [1, 0.8, 0.6, 0.4, 0.2];
+    var stopPositions = stops.map(function(s) {
+      // inverse function of value in respect to distance
+      var pos = Math.sqrt(self.strength / (s * valueAt0) - self.distance);
+      return pos;
+    })
+
+    for (var i = 0; i < stops.length; i++) {
+      gradient.append("stop")
+        .attr("offset", "" + stopPositions[i]*5 + "%")
+        .attr("stop-color", "#c0c")
+        .attr("stop-opacity", stops[i]*valueAt0)
+    }
   }
 
   valueAtPosition(x, y) {
@@ -102,10 +89,19 @@ class CircularSource {
   }
 
   dom() {
-    var domSource = d3.select(document.createElementNS(d3.namespaces.svg, 'circle'))
-        .attr('r', Math.sqrt(this.strength) * 50)
+    var domSource = d3.select(document.createElementNS(d3.namespaces.svg, 'g'));
+
+    domSource.append('circle')
+        .attr('r', 100)
         .attr('cx', this.x)
         .attr('cy', this.y)
+        .attr('fill', 'url(#gradient_' + this.id + ')');
+
+    domSource.append('circle')
+        .attr('r', Math.sqrt(this.strength)*5)
+        .attr('cx', this.x)
+        .attr('cy', this.y);
+
 
     return domSource.node();
   }
