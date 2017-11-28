@@ -47,6 +47,7 @@ class CircularSource {
     this.strength = opts.strength;
     this.distance = opts.distance;
     this.id = opts.id;
+		this.color = opts.color;
 		this.r = 10;
     this.createGradient();
   }
@@ -69,6 +70,7 @@ class CircularSource {
 		for (var i = stopCount; i > 0; i--) {
 			stops.push(valueAt0*(i/stopCount));
 		}
+		stops.push(stops[stops.length-1]/2);
     var stopPositions = stops.map(function(s) {
       return self.distanceOfValue(s);
     })
@@ -78,7 +80,7 @@ class CircularSource {
     for (var i = 0; i < stops.length; i++) {
       gradient.append("stop")
         .attr("offset", "" + (50*stopPositions[i] / this.r) + "%")
-        .attr("stop-color", "#c0c")
+        .attr("stop-color", this.color)
         .attr("stop-opacity", stops[i])
     }
   }
@@ -113,6 +115,10 @@ class CircularSource {
 
     domSource.append('circle')
         .attr('r', Math.sqrt(this.strength))
+				.attr('stroke', '#000')
+				.attr('stroke-width', '2px')
+				.attr('stroke-opacity', '0.3')
+				.attr('fill-opacity', '0')
 
 		domSource.attr("transform", "translate(" + this.x + ", " + this.y + ")")
 				.call(d3.drag()

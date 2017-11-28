@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-.light {
-  fill: #ff0;
-  fill-opacity: 0.5;
-}
 .vehicle {
   stroke: #000;
   stroke-width: 1.5px;
@@ -57,9 +53,10 @@ var lights_data = Array.apply(null, Array(numLights)).map(function (_, i) {
   return {
     x: Math.random() * width,
     y: Math.random() * height,
-    strength: Math.random() * 1000 + 300,
+    strength: Math.random() * 1000 + 100,
     distance: lightDistance,
-    id: "light" + lightsNumber
+    id: "light" + lightsNumber,
+    color: "#fe0"
   }
 })
 
@@ -72,6 +69,11 @@ var svg = d3.select('div').append('svg')
     .attr('height', height)
 
 var defs = svg.append("defs");
+
+svg.append("rect")
+  .attr("width", width)
+  .attr("height", height)
+  .attr("fill", "#333")
 
 var [vehicles, simulation] = createVehicles(vehicles_data);
 var [light, lights] = createCircularLight(lights_data);
