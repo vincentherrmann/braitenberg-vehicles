@@ -5,22 +5,23 @@ function createCircularLight(data) {
     return new CircularSource(d);
   })
 
-  var lightDrag = d3.drag()
-      .on('drag', circleDragged);
-
   var lights = svg.selectAll('light')
     .data(light.sources)
     .enter().append(function(d) { return d.dom(); })
       .attr('class', 'light')
-      .call(lightDrag);
+      //.call(lightDrag);
 
   return [light, lights];
 }
 
 function circleDragged(d) {
-    d3.select(this)
-        .attr("cx", d.x = d3.event.x)
-        .attr("cy", d.y = d3.event.y)
+	d.x = d3.event.x;
+	d.y = d3.event.y;
+	d3.select(this)
+			.attr("transform", "translate(" + d.x + ", " + d.y + ")");
+    // d3.select(this)
+    //     .attr("cx", d.x = d3.event.x)
+    //     .attr("cy", d.y = d3.event.y)
 }
 
 function lightAtPosition(x, y) {
@@ -56,6 +57,7 @@ class CircularSource {
     this.strength = opts.strength;
     this.distance = opts.distance;
     this.id = opts.id;
+		this.r = 10;
     this.createGradient();
   }
 
@@ -65,21 +67,35 @@ class CircularSource {
         .attr("r", "100%");
 
     var self = this
-    var valueAt0 = this.strength / this.distance;
-    var stops = [1, 0.8, 0.6, 0.4, 0.2];
+    var valueAt0 = Math.min(1, this.strength / this.distance);
+		var minOpacity = 0.01
+		if (valueAt0 < minOpacity) {
+			return
+		}
+		var maxStopDiff = 0.1;
+		var stopCount = Math.ceil(valueAt0 / maxStopDiff);
+		this.r = this.distanceOfValue(minOpacity);
+    var stops = [];
+		for (var i = stopCount; i > 0; i--) {
+			stops.push(valueAt0*(i/stopCount));
+		}
     var stopPositions = stops.map(function(s) {
-      // inverse function of value in respect to distance
-      var pos = Math.sqrt(self.strength / (s * valueAt0) - self.distance);
-      return pos;
+      return self.distanceOfValue(s);
     })
+		stops.push(0);
+		stopPositions.push(self.distanceOfValue(minOpacity));
 
     for (var i = 0; i < stops.length; i++) {
       gradient.append("stop")
-        .attr("offset", "" + stopPositions[i]*5 + "%")
+        .attr("offset", "" + (50*stopPositions[i] / this.r) + "%")
         .attr("stop-color", "#c0c")
-        .attr("stop-opacity", stops[i]*valueAt0)
+        .attr("stop-opacity", stops[i])
     }
   }
+
+	distanceOfValue(v) {
+		return Math.sqrt(this.strength / v - this.distance);
+	}
 
   valueAtPosition(x, y) {
     var dx = this.x - x;
@@ -88,20 +104,29 @@ class CircularSource {
     return this.strength / (dist*dist);
   }
 
+	drag(d) {
+		this.x = d3.event.x;
+		this.y = d3.event.y;
+
+		d3.select(this)
+				.attr("transform", "translate(" + this.x + ", " + this.y + ")");
+	}
+
   dom() {
     var domSource = d3.select(document.createElementNS(d3.namespaces.svg, 'g'));
+		var self = this;
 
     domSource.append('circle')
-        .attr('r', 100)
-        .attr('cx', this.x)
-        .attr('cy', this.y)
-        .attr('fill', 'url(#gradient_' + this.id + ')');
+        .attr('r', this.r)
+        .attr('fill', 'url(#gradient_' + this.id + ')')
+				.attr('class', 'field');
 
     domSource.append('circle')
-        .attr('r', Math.sqrt(this.strength)*5)
-        .attr('cx', this.x)
-        .attr('cy', this.y);
+        .attr('r', Math.sqrt(this.strength))
 
+		domSource.attr("transform", "translate(" + this.x + ", " + this.y + ")")
+				.call(d3.drag()
+					.on('drag', this.drag));
 
     return domSource.node();
   }

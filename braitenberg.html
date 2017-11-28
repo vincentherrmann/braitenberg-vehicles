@@ -11,6 +11,9 @@
   fill: #888;
   fill-opacity: 1.0;
 }
+.field {
+  pointer-events: none;
+}
 </style>
 
 <body>
@@ -30,7 +33,7 @@ var minVelocity = 0.,
     numVehicles = 1,
     numLights = 4,
     lightFactor = 1000.,
-    lightDistance = 100.,
+    lightDistance = 1000.,
     noisyMotion = 0.1;
 
 var vehicles_data = Array.apply(null, Array(numVehicles)).map(function (_, i) {
@@ -54,7 +57,7 @@ var lights_data = Array.apply(null, Array(numLights)).map(function (_, i) {
   return {
     x: Math.random() * width,
     y: Math.random() * height,
-    strength: Math.random() * 80 + 20,
+    strength: Math.random() * 2000 + 500,
     distance: lightDistance,
     id: "light" + lightsNumber
   }
