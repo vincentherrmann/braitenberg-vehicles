@@ -1,4 +1,176 @@
 <!DOCTYPE html>
+
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<br><br>
+		<title>Braitenberg-Simulation</title>
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
+		<link rel="stylesheet" type="text/css" href="braitenberg.css"/>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.1.1/d3.min.js"></script>
+		<script src="collision.js"></script>
+		<script src="vehicles.js"></script>
+		<script src="environment.js"></script>
+	
+		<style>
+
+			.light {
+		 	 	fill: #FDED5C;
+		  	fill-opacity: 0.5;
+			}
+			.vehicle {
+		  	stroke: #000;
+		 	  stroke-width: 1.5px;
+		 	 	fill: #888;
+		  	fill-opacity: 1.0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- Header -->
+  	<div id="headingBar">
+  		<h1>Braitenberg Playground</h1>
+			<h2>Braitenberg Playground is a Simulation of the Braitenberg vehicles, as described by Valentin Braitenberg in: „Vehikel. Experimente mit künstlichen Wesen“.</h2>
+  	</div>
+
+	  <div id="content">
+
+		<!-- Top Controls -->
+		<div id="top-controls">
+	    <div class="mini yellow circular ui icon buttons">
+	    	<button onclick="simulation.restart()" class="ui button" id=reset-button title="reset the simulation"><i class="play icon"></i></button>
+	    	<button onclick="simulation.stop()" class="ui button" id=pause-button title="pause the simulation"><i class="pause icon"></i></button>
+	    </div>
+			<div class="mini ui input">
+	  		<input type="number" name="inputV"placeholder="number of vehicles" id=InVehicles>
+			</div>
+			<div class="mini ui input">
+				<input type="number" name="inputL"placeholder="number of lights" id=InLights>
+			</div>
+
+	  	<label for="slidMinVelocity">min. speed:&nbsp;&nbsp;<span class="value"></span></label>
+	  	<input type="range" name="slider1" min="1" max="100" value="50" class="slider" id="slidMinVelocity">
+			<label for="slidMaxVelocity">max. speed:&nbsp;&nbsp;<span class="value"></span></label>
+			<input type="range" name="slider2" min="1" max="100" value="50" class="slider" id="slidMaxVelocity">
+			<label for="slidLightFactor">light factor:&nbsp;&nbsp;<span class="value"></span></label>
+			<input type="range" name="slider3" min="1" max="100" value="50" class="slider" id="slidLightFactor">
+			<button onclick="updateSim()" class="mini yellow ui button" id=apply-button title="apply changes">apply</button>
+		</div>
+
+		<div class=main id="area1"</a></div>
+
+		<div class= main id="tabs">
+			<div class="ui top attached tabular menu">
+			  <a class="item" data-tab="first">Generation 1 </a>
+			  <a class="item active" data-tab="second">Generation 2 </a>
+			  <a class="item" data-tab="third">Generation 3 </a>
+			  <a class="item" data-tab="fourth">Generation 4 </a>
+			</div>
+			<div class="ui bottom attached tab segment active" data-tab="first">
+			  Vehicle 1: getting around <br><br>
+			  Temperature Sensor, Motor, Brownian Function<br>
+			  Alive. Moves around restlessly. Likes Cold. Not Smart.
+			</div>
+			<div class="ui bottom attached tab segment" data-tab="second">
+			  Vehicle 2: Fear/Agression <br><br>
+			  2 Light/Temp Sensors + Motors <br>
+			  Coward: flees from light/temperature <br>
+			  Agressor: fährt auf Licht zu <br>
+			</div>
+			<div class="ui bottom attached tab segment" data-tab="third">
+			  Vehicle 3: Love <br><br>
+			</div>
+			<div class="ui bottom attached tab segment" data-tab="fourth">
+			  Vehicle 4: Values/Tastes <br><br>
+			  Sensors: light, temperature, oxygene concentration, organic concentration <br>
+			</div>
+		</div>
+
+		<!-- left part -->
+		<div class="ui horizontal segments">
+		  <div class="ui segment">
+		  	<div id="leftpart">
+		  	<div class='lp'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Praes
+		  		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Praes
+		  		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum.
+		  	</div>
+		  	</div>
+			</div>
+	<!-- 		right part	 -->	
+			<div class="ui segment">
+				<div id="rightpart">
+				<div class='lp'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Praes Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Praes Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Praes Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum.
+				</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+
+		var width = 1130
+		    height = 450;
+
+		var minVelocity = 0.,
+		    maxVelocity = 4., 
+		    numVehicles = 2,
+		    numLights = 12,
+		    lightFactor = 100000.,
+		    lightDistance = 100.,
+		    noisyMotion = 0.1;
+
+		var vehicles_data = Array.apply(null, Array(numVehicles)).map(function (_, i) {
+		  var v = 0;//Math.random()*1.;
+		  return {
+		    x: Math.random(50,100) * width,
+		    y: Math.random(50,100) * height,
+		    vx: 0,
+		    vy: 0,
+		    vl: v,
+		    vr: v,
+		    ang: Math.random()*Math.PI*2,
+		    w: 60,
+		    h: 80
+		  };
+		});
+
+		var lights_data = Array.apply(null, Array(numLights)).map(function (_, i) {
+		  return {
+		    x: Math.random() * width,
+		    y: Math.random() * height,
+		    strength: Math.random() * 0.8 + 0.2
+		  }
+		})
+
+	 	var svg = d3.select('#area1').append('svg')
+	 			.attr("style", "outline: thin solid white;")  
+		    .attr('width', width)
+		    .attr('height', height);
+
+		var [vehicles, simulation] = createVehicles(vehicles_data);
+		var lights = createCircularLight(lights_data);
+
+	// tab control
+	$(document).ready(function(){
+	   $('.ui .item').on('click', function() {
+	      $('.ui .item').removeClass('active');
+	      $(this).addClass('active');
+	      var tab = $(this).attr("data-tab");
+	    	$(".tab.segment").removeClass("active");
+	    	$(".tab.segment[data-tab=\"" + tab + "\"]").addClass("active");
+	   });             
+	});
+
+		</script>
+
+	</body>
+</html>
+=======
 <meta charset="utf-8">
 <style>
 .light {
@@ -74,3 +246,4 @@ var [vehicles, simulation] = createVehicles(vehicles_data);
 var [light, lights] = createCircularLight(lights_data);
 
 </script>
+
