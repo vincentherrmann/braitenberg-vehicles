@@ -104,7 +104,19 @@ function ticked() {
   // will get called after each tick
 
   vehicles.each(function(d) {
-    d.tick();
+    var points = vehiclePoints(d);
+    var leftPos = points[0];
+    var rightPos = points[3];
+    var lightAtLeft = lightAtPosition(leftPos[0], leftPos[1]) * lightFactor;
+    var lightAtRight = lightAtPosition(rightPos[0], rightPos[1]) * lightFactor;
+    d.vl = maxVelocity - lightAtRight;
+    d.vr = maxVelocity - lightAtLeft;
+
+    d.vr += (Math.random()*noisyMotion - 0.5 * noisyMotion); //* d.vr;
+    d.vl += (Math.random()*noisyMotion - 0.5 * noisyMotion); //* d.vl;
+
+    d.vr = Math.min(Math.max(d.vr, minVelocity), maxVelocity);
+    d.vl = Math.min(Math.max(d.vl, minVelocity), maxVelocity);
   })
 
   vehicles.attr("transform", function(d) {
