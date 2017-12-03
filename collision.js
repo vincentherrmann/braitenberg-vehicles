@@ -5,7 +5,7 @@ function boundsForce() {
 
   function force() {
     nodes.forEach(function(d) {
-      var points = vehiclePoints(d);
+      var points = d.points();
       for (var i = 0; i < points.length; i++) {
         var dist = 0
         if ((dist = bbox.x - points[i][0]) > 0) {
@@ -67,7 +67,7 @@ function polygonCollide() {
       // calculate collision for each node
       for (i = 0; i < n; ++i) {
         node = nodes[i];
-        nodePoints = vehiclePoints(node);
+        nodePoints = node.points();
         xi = node.x + node.vx;
         yi = node.y + node.vy;
         tree.visit(apply);
@@ -84,7 +84,7 @@ function polygonCollide() {
         // skip collision with self
         if (data.index <= node.index) {return}
 
-        dataPoints = vehiclePoints(data);
+        dataPoints = data.points();
         for(var i = 0; i < nodePoints.length; ++i) {
           var overlap = Math.max(pointInPolygon(nodePoints[i], dataPoints),
                                  pointInPolygon(dataPoints[i], nodePoints));
@@ -129,7 +129,7 @@ function polygonCollide() {
       // set the bounding box containing all data for this quadrant
       if (quad.data) { // if there is one single data element in this quadrant
         // set the bounding box of this quad as the same
-        var points = vehiclePoints(quad.data);
+        var points = quad.data.points();
         quad.bbox = quad.data.bbox = bboxOfPoints(points);
       } else {
         // set the bounding box to contain all elements of the subquadrants
