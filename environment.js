@@ -1,21 +1,38 @@
+
+
+//create container & canvas for visualization
+// container = container.append("div")
+//   .style({
+//     width: `${width}px`,
+//     height: `${height}px`,
+//     position: "relative",
+//     top: `-${padding}px`,
+//     left: `-${padding}px`
+//   });
+
+// this.canvas = container.append("canvas")
+//   .attr("width", numSamples)
+//   .attr("height", numSamples)
+//   .style("width", (width - 2 * padding) + "px")
+//   .style("height", (height - 2 * padding) + "px")
+//   .style("position", "absolute")
+//   .style("top", `${padding}px`)
+//   .style("left", `${padding}px`);
+
 function createCircularLight(data) {
-  var lightDrag = d3.drag()
-      .on('drag', circleDragged);
+  var light = new Feature();
+  light.scale = lightFactor;
+  light.sources = data.map(function(d) {
+    return new CircularSource(d);
+  })
 
   var lights = svg.selectAll('light')
-    .data(data)
-    .enter().append('circle')
+    .data(light.sources)
+    .enter().append(function(d) { return d.dom(); })
       .attr('class', 'light')
-      .attr('r', function(d) { return Math.sqrt(d.strength) * 50; })
-      .attr('cx', function(d) { return d.x; })
-      .attr('cy', function(d) { return d.y; })
-      .call(lightDrag);
-}
+      //.call(lightDrag);
 
-function circleDragged(d) {
-    d3.select(this)
-        .attr("cx", d.x = d3.event.x)
-        .attr("cy", d.y = d3.event.y)
+  return [light, lights];
 }
 
 function lightAtPosition(x, y) {
@@ -27,4 +44,107 @@ function lightAtPosition(x, y) {
     light += (d.strength / (dist*dist));
   })
   return light;
+}
+
+class Feature {
+  constructor(opts) {
+    this.sources = []
+    this.scale = 1.
+  }
+
+  atPosition(x, y) {
+    var value = 0.;
+    for (var source of this.sources) {
+      value += source.valueAtPosition(x, y);
+    }
+    return value * this.scale;
+  }
+}
+
+class CircularSource {
+  constructor(opts) {
+    this.x = opts.x;
+    this.y = opts.y;
+    this.strength = opts.strength;
+    this.distance = opts.distance;
+    this.id = opts.id;
+    this.color = opts.color;
+    this.r = 10;
+    this.createGradient();
+  }
+
+  createGradient() {
+    var gradient = defs.append("radialGradient")
+        .attr("id", "gradient_" + this.id)
+        .attr("r", "100%");
+
+    var self = this
+    var valueAt0 = Math.min(1, this.strength / this.distance);
+    var minOpacity = 0.01
+    if (valueAt0 < minOpacity) {
+      return
+    }
+    var maxStopDiff = 0.1;
+    var stopCount = Math.ceil(valueAt0 / maxStopDiff);
+    this.r = this.distanceOfValue(minOpacity);
+    var stops = [];
+    for (var i = stopCount; i > 0; i--) {
+      stops.push(valueAt0*(i/stopCount));
+    }
+    stops.push(stops[stops.length-1]/2);
+    var stopPositions = stops.map(function(s) {
+      return self.distanceOfValue(s);
+    })
+    stops.push(0);
+    stopPositions.push(self.distanceOfValue(minOpacity));
+
+    for (var i = 0; i < stops.length; i++) {
+      gradient.append("stop")
+        .attr("offset", "" + (50*stopPositions[i] / this.r) + "%")
+        .attr("stop-color", this.color)
+        .attr("stop-opacity", stops[i])
+    }
+  }
+
+  distanceOfValue(v) {
+    return Math.sqrt(this.strength / v - this.distance);
+  }
+
+  valueAtPosition(x, y) {
+    var dx = this.x - x;
+    var dy = this.y - y;
+    var dist = Math.sqrt(dx*dx + dy*dy) + this.distance;
+    return this.strength / (dist*dist);
+  }
+
+  drag(d) {
+    d.x = d3.event.x;
+    d.y = d3.event.y;
+
+    d3.select(this)
+        .attr("transform", "translate(" + d.x + ", " + d.y + ")");
+  }
+
+  dom() {
+    var domSource = d3.select(document.createElementNS(d3.namespaces.svg, 'g'));
+    var self = this;
+
+    domSource.append('circle')
+        .attr('r', this.r)
+        .attr('fill', 'url(#gradient_' + this.id + ')')
+        .attr('class', 'field');
+
+    domSource.append('circle')
+        .attr('r', Math.sqrt(this.strength))
+        .attr('stroke', '#000')
+        .attr('stroke-width', '2px')
+        .attr('stroke-opacity', '0.3')
+        .attr('fill-opacity', '0')
+
+    domSource.attr("transform", "translate(" + this.x + ", " + this.y + ")")
+        .call(d3.drag()
+          .on('drag', this.drag));
+
+    return domSource.node();
+  }
 }
