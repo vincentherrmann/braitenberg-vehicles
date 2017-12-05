@@ -1,3 +1,24 @@
+
+
+//create container & canvas for visualization
+// container = container.append("div")
+//   .style({
+//     width: `${width}px`,
+//     height: `${height}px`,
+//     position: "relative",
+//     top: `-${padding}px`,
+//     left: `-${padding}px`
+//   });
+
+// this.canvas = container.append("canvas")
+//   .attr("width", numSamples)
+//   .attr("height", numSamples)
+//   .style("width", (width - 2 * padding) + "px")
+//   .style("height", (height - 2 * padding) + "px")
+//   .style("position", "absolute")
+//   .style("top", `${padding}px`)
+//   .style("left", `${padding}px`);
+
 function createCircularLight(data) {
   var light = new Feature();
   light.scale = lightFactor;
@@ -127,4 +148,3 @@ class CircularSource {
     return domSource.node();
   }
 }
-

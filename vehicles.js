@@ -43,6 +43,7 @@ class Vehicle {
           case 1:
             domVehicle.append('svg:image')
             .attr("xlink:href", "1_dark.svg")
+
             .attr('width', this.w)
             .attr('height', this.h)
             .attr('x', -this.w/2)
@@ -181,4 +182,3 @@ function motorForce() {
 
   return force;
 }
-
