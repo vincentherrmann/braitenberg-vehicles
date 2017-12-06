@@ -138,7 +138,7 @@ class CircularSource {
         .attr('r', Math.sqrt(this.strength))
         .attr('stroke', '#000')
         .attr('stroke-width', '2px')
-        .attr('stroke-opacity', '0.3')
+        .attr('stroke-opacity', '0.8')
         .attr('fill-opacity', '0')
 
     domSource.attr("transform", "translate(" + this.x + ", " + this.y + ")")

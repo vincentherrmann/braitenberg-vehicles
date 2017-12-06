@@ -37,19 +37,18 @@ class Vehicle {
 
     dom() {
         var domVehicle = d3.select(document.createElementNS(d3.namespaces.svg, 'g'));
-        var vselect = 2;
+        var vselect = 1;
 
           switch(vselect) {
           case 1:
             domVehicle.append('svg:image')
             .attr("xlink:href", "1_dark.svg")
-
             .attr('width', this.w)
             .attr('height', this.h)
             .attr('x', -this.w/2)
             .attr('y', -this.h/2);
           break;
-          
+
           case 2:
             domVehicle.append('svg:image')
             .attr("xlink:href", "2a_dark.svg")
