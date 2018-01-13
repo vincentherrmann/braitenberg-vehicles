@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
 
 	<head>
@@ -7,22 +6,15 @@
 		<br><br>
 		<title>Braitenberg-Simulation</title>
 		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
-		<link rel="stylesheet" type="text/css" href="braitenberg.css"/>
+		<link rel="stylesheet" type="text/css" href="braitenberg_stylesheetz.css"/>
 		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.1.1/d3.min.js"></script>
 		<script src="collision.js"></script>
-		<script src="vehicles.js"></script>
+		<script src="vehicles_new.js"></script>
 		<script src="environment.js"></script>
-	
-		<style>
-
-			.field {
-  			pointer-events: none;
-			}
-		</style>
 	</head>
 
 	<body>
@@ -30,7 +22,7 @@
   	<div id="headingBar">
   		<h1>Braitenberg Playground</h1>
 			<h2>Braitenberg Playground is a Simulation of the Braitenberg vehicles, as described by Valentin Braitenberg in: „Vehikel. Experimente mit künstlichen Wesen“.<br>
-			tweak the global paramters in at the top and switch between different generations and configurations at the bottom </h2>
+			tweak the global paramters in at the top and switch between different generations and configurations of vehicles at the bottom. </h2>
   	</div>
 
 	  <div id="content">
@@ -54,68 +46,314 @@
 			<input type="range" name="slider2" min="1" max="100" value="50" class="slider" id="slidMaxVelocity">
 			<label for="slidSensorSens">sensibility:&nbsp;&nbsp;<g id="chosen3">50&nbsp;&nbsp;&nbsp;</g><span class="value"></span></label>
 			<input type="range" name="slider3" min="1" max="100" value="50" class="slider" id="slidSensorSens">
-			<button onclick="ticked()" class="mini grey ui button" id=apply-button title="apply changes">apply</button>
+			<button onclick="simulation.restart()" class="mini grey ui button" id=apply-button1 title="apply changes1">apply</button>
 		</div>
 
+		<!-- configuration ara -->
 		<div class=main id="area1"</a></div>
 
 		<div class= main id="tabs">
-			<div class="ui top attached tabular menu">
-			  <a class="item active" data-tab="first">Generation 1 </a>
-			  <a class="item" data-tab="second">Generation 2</a>
-			  <a class="item" data-tab="third">Generation 3 </a>
-			  <a class="item" data-tab="fourth">Generation 4 </a>
-			</div>
+				<div class="ui top attached tabular menu">
+				  <a class="item active" data-tab="first">Generation 1 </a>
+				  <a class="item" data-tab="second">Generation 2a/2b</a>
+				  <a class="item" data-tab="third">Generation 3a/3b </a>
+				  <a class="item" data-tab="fourth">Generation 3c </a>
+				</div>
+
+			<!-- first tab content -->
 			<div class="ui bottom attached tab segment active" data-tab="first">
-			  <b>Vehicle 1: getting around</b> <br><br>
-			  Temperature Sensor, Motor, Brownian Function<br>
-			  Alive. Moves around restlessly. Likes Cold. Not Smart.<br><br>
-				<svg 
-					xmlns="http://www.w3.org/2000/svg" id="vehicle1" width="109" height="163" viewBox="0 0 109 163"><style>.a{fill:#F0F0F0;}.b{stroke-width:2;stroke:#3B3B3B;}</style><defs><rect y="18" width="42" height="136" rx="2"/><rect x="9" y="133" width="24" height="42" rx="2"/></defs><g fill="none"><g transform="translate(53.936533 81.277223)rotate(30)translate(-53.936533 -81.277223)translate(32.936533 -6.222777)"><use xlink:href="#path-1" class="a"/><rect x="0.8" y="18.8" width="40.5" height="134.5" rx="2" class="b"/><use xlink:href="#path-2" class="a"/><rect x="9.8" y="133.8" width="22.5" height="40.5" rx="2" class="b"/><path d="M20.8 9.5L20.8 133" class="b"/><path d="M34 0.7C30 6.4 26 9.2 21.8 9.2 17.7 9.2 13.5 6.4 9.3 0.7" class="b"/></g></g>
-				</svg>
+				<!-- left part -->
+				<div class="ui horizontal segments" id = horizSeg>
+				  <div class="ui segment" id="leftpart">
+						<b>Vehicle 1: getting around</b> <br>
+						<br>
+					  one sensor, one motor<br>
+					  Alive. Moves around restlessly.<br>
+					  Likes certain environmental qualities. Not Smart.<br>
+					  <br>
+					  The vehicle is equipped with one sensor and one motor. The more there is of the quality to which the sensor is tuned, the faster the motor goes. The vehicle will move, wherever it is, in the direction in which it happens to
+						be pointing.<br>
+						It will slow down in regions with lower sensor activation and speed up where it's sensor receives higher activation values.<br>
+						<br>
+						"Imagine, now, what you would think if you saw such a vehicle swimming around in a pond. It is restless, you would say, and does not like warm water. But it is quite stupid, since it is not able to turn back to the nice cold spot it overshot in its restlessness. Anyway, you would say, it is ALIVE, since you have never seen a particle of dead matter move around quite like that."
+					</div>
+					<!-- 		right part	 -->	
+					<div class="ui segment" id="rightpart">
+						<b>Vehicle configuration:</b> <br>
+						<div id="figures">
+							<svg width="109" height="163" xmlns="http://www.w3.org/2000/svg" id="vehicle1">
+							  <g transform="rotate(30 49.08 145.849)" stroke="#3B3B3B" stroke-width="1.5" fill="none" fill-rule="evenodd">
+							    <rect x=".75" y="18.75" width="40.5" height="134.5" rx="2"/>
+							    <rect x="9.75" y="133.75" width="22.5" height="40.5" rx="2"/>
+							    <path d="M20.75 9.5V133" stroke-linecap="square"/>
+							    <path d="M34 .659c-3.991 5.71-8.047 8.564-12.168 8.564-4.12 0-8.285-2.855-12.492-8.564"/>
+							  </g>
+							</svg>
+						</div>
+					</div>
+				</div>
 			</div>
 
+			<!-- second tab content -->
 			<div class="ui bottom attached tab segment" data-tab="second">
-			  <b>Vehicle 2: Fear/Agression</b> <br><br>
-			  2 Light/Temp Sensors + Motors <br>
-			  Coward: flees from light/temperature <br>
-			  Agressor: fährt auf Licht zu <br><br>
-				<svg 
-					xmlns="http://www.w3.org/2000/svg" id="vehicle2a" width="149" height="171" viewBox="0 0 149 171"><style>.a{fill:#F0F0F0;}.b{stroke-width:2;stroke:#3B3B3B;}.c{fill:#3B3B3B;}</style><defs><rect x="11" y="17" width="84" height="136" rx="2"/><rect y="105" width="24" height="42" rx="2"/><rect x="82" y="105" width="24" height="42" rx="2"/></defs><g fill="none"><g transform="translate(81.149346 83.750943)rotate(30)translate(-81.149346 -83.750943)translate(28.149346 7.250943)"><use xlink:href="#path-1" class="a"/><rect x="11.8" y="17.8" width="82.5" height="134.5" rx="2" class="b"/><use xlink:href="#path-2" class="a"/><rect x="0.8" y="105.8" width="22.5" height="40.5" rx="2" class="b"/><use xlink:href="#path-3" class="a"/><rect x="82.8" y="105.8" width="22.5" height="40.5" rx="2" class="b"/><path d="M86.7 0C82.7 5.7 78.6 8.6 74.5 8.6 70.4 8.6 66.2 5.7 62 0" class="b"/><path d="M43.1 0C39.1 5.7 35 8.6 30.9 8.6 26.8 8.6 22.6 5.7 18.4 0" class="b"/><path d="M74 8.7C74 71.3 74 105.1 74 110 74 114.9 76.8 117.4 82.4 117.4" class="b"/><path d="M31.4 9C31.4 71.6 31.4 105.3 31.4 110.3 31.4 115.2 28.6 117.7 23 117.7" class="b"/><text font-family="AvenirNext-Regular, Avenir Next" font-size="19.1578947" class="c"><tspan x="25" y="137">  +</tspan></text><text font-family="AvenirNext-Regular, Avenir Next" font-size="19.1578947" class="c"><tspan x="69" y="140.5">  +</tspan></text></g></g>
-				</svg>
-				<svg 
-					xmlns="http://www.w3.org/2000/svg" id="vehicle2b" width="149" height="172" viewBox="0 0 149 172"><style>.a{fill:#F0F0F0;}.b{stroke-width:2;stroke:#3B3B3B;}.c{fill:#3B3B3B;}</style><defs><rect x="11" y="17" width="84" height="136" rx="2"/><rect y="105" width="24" height="42" rx="2"/><rect x="82" y="105" width="24" height="42" rx="2"/></defs><g fill="none"><g transform="translate(81.149346 84.750943)rotate(30)translate(-81.149346 -84.750943)translate(28.149346 8.250943)"><use xlink:href="#path-1" class="a"/><rect x="11.8" y="17.8" width="82.5" height="134.5" rx="2" class="b"/><use xlink:href="#path-2" class="a"/><rect x="0.8" y="105.8" width="22.5" height="40.5" rx="2" class="b"/><use xlink:href="#path-3" class="a"/><rect x="82.8" y="105.8" width="22.5" height="40.5" rx="2" class="b"/><path d="M86.7 0C82.7 5.7 78.6 8.6 74.5 8.6 70.4 8.6 66.2 5.7 62 0" class="b"/><path d="M42.7 0C38.7 5.7 34.6 8.6 30.5 8.6 26.4 8.6 22.2 5.7 18 0" class="b"/><text font-family="AvenirNext-Regular, Avenir Next" font-size="19.1578947" class="c"><tspan x="25" y="137">  +</tspan></text><text font-family="AvenirNext-Regular, Avenir Next" font-size="19.1578947" class="c"><tspan x="67" y="137">  +</tspan></text><path d="M82.8 118C83.5 118 82 118 78.4 118 53 117.8 30.3 108.1 30.3 48.7 30.3 28.8 30.3 15.4 30.3 8.5" class="b"/><path d="M22.9 117.5C22.3 117.5 23.7 117.5 27.3 117.5 52.3 117.3 74.7 107.6 74.7 48.2 74.7 28.3 74.7 14.9 74.7 8" class="b"/></g></g>
-				</svg>
+				<!-- left part -->
+				<div class="ui horizontal segments" id = horizSeg>
+				  <div class="ui segment" id="leftpart">
+				  	<b>Vehicle 2a/2b: Fear/Agression</b> <br>
+				  	<br>
+					  2 Light/Temp Sensors + Motors<br>
+					  Coward: flees from certain environmental qualities<br>
+					  Agressor: rushes towards certain environmental qualities<br>
+					  <br>
+					  similar to Vehicle 1 except that it has two sensors, one on each side, and two motors, right and left. The more the sensors are excited, the faster the motors run. Two different vehicle configurations are possible, depending on whether we connect each sensor to the motor on the same side (2a) or each sensor to the motor on the<br>
+					 	opposite side. (2b)<br>
+					 	Vehicle 2a will spend more time in the places where its sensors will be less excited and will speed up when it is exposed to higher concentrations of exciting environmental qualities. Depending on the different excitation of the two sensors, the two motors of the vehicle will run at different speeds and therefore steer the vehicle in a certain direction.<br>
+					  <br>
+					  "Let Vehicles 2a and 2b move around in their world for a while and watch them. Their characters are quite opposite. Both DISLIKE sources. But 2a becomes restless in their vicinity and tends to avoid them, escaping until it safely reaches a place where the influence of the source is scarcely felt. Vehicle 2a is a COWARD, you would say. Not so Vehicle 2b. It, too, is excited by the<br>
+					  presence of sources, but resolutely turns toward them and hits them with high velocity, as if it wanted to destroy them. Vehicle 2b is AGGRESSIVE, obviously."
+					</div>
+					<!-- 		right part	 -->	
+					<div class="ui segment" id="rightpart">
+						<b>Vehicle configuration:</b><br>
+						<div id="select2">
+							<div id="select2elem"><button class="mini ui button" id=select2a title="2a (Fear)">2a (Fear)</button><x></div>
+							<div id="select2elem"><button class="mini ui button" id=select2b title="2a (Fear)">2b (Agression)</button><x></div>
+						</div id="select2">
+						<div id="figures">
+							<svg width="149" height="171" xmlns="http://www.w3.org/2000/svg" id="vehicle2a">
+							  <g transform="rotate(30 53.544 132.653)" fill="none" fill-rule="evenodd">
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x="11.75" y="17.75" width="82.5" height="134.5" rx="2"/>
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x=".75" y="105.75" width="22.5" height="40.5" rx="2"/>
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x="82.75" y="105.75" width="22.5" height="40.5" rx="2"/>
+							    <path d="M86.66 0c-3.991 5.71-8.047 8.564-12.168 8.564C70.372 8.564 66.207 5.71 62 0M43.08 0c-3.991 5.71-8.047 8.564-12.168 8.564-4.12 0-8.285-2.855-12.492-8.564M74 8.73V110c0 4.934 2.794 7.401 8.381 7.401M31.381 9v101.27c0 4.934-2.794 7.4-8.381 7.4" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <text font-family="AvenirNext-Regular, Avenir Next" font-size="19.158" fill="#3B3B3B">
+							      <tspan x="25" y="137">+</tspan>
+							    </text>
+							    <text font-family="AvenirNext-Regular, Avenir Next" font-size="19.158" fill="#3B3B3B">
+							      <tspan x="69" y="140.464">+</tspan>
+							    </text>
+							  </g>
+							</svg>
+							<svg width="149" height="172" xmlns="http://www.w3.org/2000/svg" id="vehicle2b">
+							  <g transform="rotate(30 51.678 133.153)" fill="none" fill-rule="evenodd">
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x="11.75" y="17.75" width="82.5" height="134.5" rx="2"/>
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x=".75" y="105.75" width="22.5" height="40.5" rx="2"/>
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x="82.75" y="105.75" width="22.5" height="40.5" rx="2"/>
+							    <path d="M86.66 0c-3.991 5.71-8.047 8.564-12.168 8.564C70.372 8.564 66.207 5.71 62 0M42.66 0c-3.991 5.71-8.047 8.564-12.168 8.564C26.372 8.564 22.207 5.71 18 0" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <text font-family="AvenirNext-Regular, Avenir Next" font-size="19.158" fill="#3B3B3B">
+							      <tspan x="25" y="137">+</tspan>
+							    </text>
+							    <text font-family="AvenirNext-Regular, Avenir Next" font-size="19.158" fill="#3B3B3B">
+							      <tspan x="67" y="137">+</tspan>
+							    </text>
+							    <path d="M82.832 117.978c.7.03-.787.03-4.46 0-25.336-.204-48.078-9.867-48.078-69.284V8.462" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path d="M22.94 117.516c-.688.03.776.03 4.395 0 24.963-.204 47.37-9.867 47.37-69.284V8" stroke="#3B3B3B" stroke-width="1.5"/>
+							  </g>
+							</svg>
+						</div>
+					</div>
+				</div>
 			</div>
 
-			<div class="ui bottom attached tab segment" data-tab="third">
-			  <b>Vehicle 3: Love</b> <br><br>
+			<!-- third tab content -->	
+			<div class="ui bottom attached tab segment" data-tab="third"> 
+				<!-- left part -->
+				<div class="ui horizontal segments" id = horizSeg>
+				  <div class="ui segment" id="leftpart">
+				  	<b>Vehicle 3a/3b: Love/Explore</b> <br><br>  
+				  	<br>
+				  	Lover: stays with the first encountered stimuli forever<br>
+				  	Explorer: moves towards certain environmental qualities and then drifts away to find a new one <br>
+				  	<br>
+				  	similiar to vehicle 2a/b, but with inhibitory connection between the sensors and the motors. The Vehicle will slow down with an increasing activation of the sensor.<br>
+				  	configuration 3a will steer towards the stimuli with it's weels turning slower as it approaches. Upon reaching the source, the vehicle will stop moving completely and stay there forever. <br>
+				  	The vehicle with configuration 3b will move very slow when it's out of the reach of the stimuli and pick up movement in another direction as soon as it encounters a slight change in the environment, rushing towards it in an accelerative manner.<br>
+				  	<br>
+				  	"These vehicles LIKE the source, you will say, but in different ways. Vehicle 3 a LOVES it in a permanent way, staying close by in quiet admiration from the time it spots the source to all future time. Vehicle 3 b, on the other hand, is an EXPLORER. It likes the nearby source all right, but keeps an eye open for other, perhaps stronger sources, which it will sail to, given a chance, in order to find a more permanent and gratifying appeasement."
+					</div>
+					<!-- 		right part	 -->	
+					<div class="ui segment" id="rightpart">
+						<b>Vehicle configuration:</b>
+						<div id="select3">
+							<div id="select3elem"><button class="mini ui button" id=select3a title="3a (Love)">3a (Love)</button><x></div>
+							<div id="select3elem"><button class="mini ui button" id=select3b title="3b (Explore)">3b (Explore)</button><x></div>
+						</div id="select3">
+						<div id="figures">
+							<svg width="149" height="171" xmlns="http://www.w3.org/2000/svg" id="vehicle3a">
+							  <g transform="rotate(30 53.294 131.72)" fill="none" fill-rule="evenodd">
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x="11.75" y="17.75" width="82.5" height="134.5" rx="2"/>
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x=".75" y="105.75" width="22.5" height="40.5" rx="2"/>
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x="82.75" y="105.75" width="22.5" height="40.5" rx="2"/>
+							    <path d="M86.66 0c-3.991 5.71-8.047 8.564-12.168 8.564C70.372 8.564 66.207 5.71 62 0M43.08 0c-3.991 5.71-8.047 8.564-12.168 8.564-4.12 0-8.285-2.855-12.492-8.564M74 8.73V110c0 4.934 2.794 7.401 8.381 7.401M31.381 9v101.27c0 4.934-2.794 7.4-8.381 7.4" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <text font-family="AvenirNext-Regular, Avenir Next" font-size="36" fill="#3B3B3B">
+							      <tspan x="25.516" y="137.84">-</tspan>
+							    </text>
+							    <text font-family="AvenirNext-Regular, Avenir Next" font-size="36" fill="#3B3B3B">
+							      <tspan x="69.516" y="136.108">-</tspan>
+							    </text>
+							  </g>
+							</svg>
+							<svg width="149" height="172" xmlns="http://www.w3.org/2000/svg" id="vehicle3b">
+							  <g transform="rotate(30 51.678 133.153)" fill="none" fill-rule="evenodd">
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x="11.75" y="17.75" width="82.5" height="134.5" rx="2"/>
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x=".75" y="105.75" width="22.5" height="40.5" rx="2"/>
+							    <rect stroke="#3B3B3B" stroke-width="1.5" x="82.75" y="105.75" width="22.5" height="40.5" rx="2"/>
+							    <path d="M86.66 0c-3.991 5.71-8.047 8.564-12.168 8.564C70.372 8.564 66.207 5.71 62 0M42.66 0c-3.991 5.71-8.047 8.564-12.168 8.564C26.372 8.564 22.207 5.71 18 0" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <text font-family="AvenirNext-Regular, Avenir Next" font-size="30" fill="#3B3B3B">
+							      <tspan x="25.5" y="137.866">-</tspan>
+							    </text>
+							    <text font-family="AvenirNext-Regular, Avenir Next" font-size="30" fill="#3B3B3B">
+							      <tspan x="68.732" y="136">-</tspan>
+							    </text>
+							    <path d="M82.832 117.978c.7.03-.787.03-4.46 0-25.336-.204-48.078-9.867-48.078-69.284V8.462" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path d="M22.94 117.516c-.688.03.776.03 4.395 0 24.963-.204 47.37-9.867 47.37-69.284V8" stroke="#3B3B3B" stroke-width="1.5"/>
+							  </g>
+							</svg>
+						</div>
+					</div>
+				</div>
 			</div>
+
+			<!-- fourth tab content -->	
 			<div class="ui bottom attached tab segment" data-tab="fourth">
-			  <b>Vehicle 4: Values/Tastes</b> <br><br>
-			  Sensors: light, temperature, oxygene concentration, organic concentration <br>
+			  <!-- left part -->
+				<div class="ui horizontal segments" id = horizSeg>
+				  <div class="ui segment" id="leftpart">
+					  <b>Vehicle 3c: Values/Tastes</b> <br>
+					 	<br>
+					  four pairs of sensors: <br>
+					  light, temperature, oxygene concentration, organic concentration <br>
+					  <br>
+					  As it's sensible to a variety of different paramters as opposed to just one, vehicle 3c displays more complex behavior:<br>
+					  It could drift away from high temperature, turns away from hot places, and at the same time turns towards light bulbs and rushed towards them, therefore destroying them. It will also stay longer in a well-oxygenated environment containing many organic molecules.<br>
+					  <br>
+						"You cannot help admitting that Vehicle 3C has a system of VALUES, and, come to think of it, KNOWLEDGE, since some of the habits it has, like destroying light bulbs, may look quite knowledgeable, as if the vehicle knows that light bulbs tend to heat up the environment and consequently make it uncomfortable to live in. It also looks as if it knows about the possibility of making energy out of oxygen and organic matter because it prefers places where these two commodities are available."
+					</div>
+					<!-- 		right part	 -->	
+					<div class="ui segment" id="rightpart">
+						<b>Vehicle configuration:</b>
+						<div class="select3c1">
+							<div id="select3celem" class="ui toggle checkbox" id="selectTemp" onclick="toggle_visibility('temp3c');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>temperature</label></div>
+							<div id="select3cslid" class=" red ui slider checkbox" id="selectTempPol" onclick="switch_visibility('tempPlus','tempMinus');"> <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
+						</div>
+						<div class="select3c2">
+							<div id="select3celem" class="ui toggle checkbox" id="selectLight" onclick="toggle_visibility('light3c');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>light</label></div>
+							<div id="select3cslid" class="ui slider checkbox" id="selectLightPol" onclick="switch_visibility('lightPlus','lightMinus');" > <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
+						</div>
+						<div class="select3c3">
+							<div id="select3celem" class="ui toggle checkbox" id="selectOrgan" onclick="toggle_visibility('organ3c');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>organic matter</label></div>
+							<div id="select3cslid" class="ui slider checkbox" id="selectOrganPol" onclick="switch_visibility('organPlus','organMinus');"> <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
+						</div>
+						<div class="select3c4">
+							<div id="select3celem" class="ui toggle checkbox" id="selectOxy" onclick="toggle_visibility('oxy3c');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>oxygen</label></div>
+							<div id="select3cslid" class="ui slider checkbox" id="selectOxyPol" onclick="switch_visibility('oxyPlus','oxyMinus');"> <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
+						</div>	
+						<div id="figures">						
+						<svg id="vehicle3c" width="194" height="233" xmlns="http://www.w3.org/2000/svg">
+							  <g fill="none" fill-rule="evenodd">
+							    <g transform="rotate(30 31.42 201.244)" fill-rule="nonzero">
+							      <rect width="103.921" height="196.708" rx="2"/>
+							      <rect stroke="#3B3B3B" stroke-width="1.5" x=".928" y="1.085" width="102.066" height="194.539" rx="2"/>
+							    </g>
+							    <g transform="rotate(30 -199.287 112.208)" fill-rule="nonzero">
+							      <rect width="29.692" height="60.748" rx="2"/>
+							      <rect stroke="#3B3B3B" stroke-width="1.5" x=".928" y="1.085" width="27.836" height="58.579" rx="2"/>
+							    </g>
+							    <g transform="rotate(30 -250.01 301.511)" fill-rule="nonzero">
+							      <rect width="29.692" height="60.748" rx="2"/>
+							      <rect stroke="#3B3B3B" stroke-width="1.5" x=".928" y="1.085" width="27.836" height="58.579" rx="2"/>
+							    </g>
+							    <!-- temperatur sensor top -->
+							    <path name="temp3c" style ="display : none" d="M188.2 45.356c-3.068 2.078-5.325 2.699-6.773 1.863-1.447-.835-2.076-3.123-1.887-6.863M132.775 13.356c-3.068 2.078-5.326 2.699-6.773 1.863-1.447-.835-2.076-3.123-1.887-6.863" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="temp3c" style ="display : none" d="M132.775 13.356c-3.068 2.078-5.326 2.699-6.773 1.863-1.447-.835-2.076-3.123-1.887-6.863" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <g font-size="30" font-family="AvenirNext-Regular, Avenir Next" fill="#3B3B3B">
+							    	<text name="tempMinus" style ="display : none" transform="rotate(30 -180.32 180.666)">
+							        <tspan x="0" y="30">-</tspan>
+							      </text>
+							      <text name="tempMinus" style ="display : none" transform="rotate(30 -208.194 280)">
+							        <tspan x="0" y="30">-</tspan>
+							      </text>							    	
+							    	<text name="lightMinus" style ="display : none" transform="rotate(30 -232.194 270)">
+							        <tspan x="0" y="30">-</tspan>
+							      </text>
+							      <text name="lightMinus" style ="display : none" transform="rotate(30 -215.194 180)">
+							        <tspan x="0" y="30">-</tspan>
+							      </text>
+							      <text name="oxyMinus" style ="display : none" transform="rotate(30 -291.32 250.666)">
+							        <tspan x="0" y="30">-</tspan>
+							      </text>
+							      <text name="oxyMinus" style ="display : none" transform="rotate(30 -270.82 174.159)">
+							        <tspan x="0" y="30">-</tspan>
+							      </text>
+							      <text name="organMinus" style ="display : none" transform="rotate(30 -236.463 165.364)">
+							        <tspan x="0" y="30">-</tspan>
+							      </text>
+							      <text name="organMinus" style ="display : none" transform="rotate(30 -262.23 276.46)">
+							        <tspan x="0" y="30">-</tspan>
+							      </text>
+							    </g>
+							   <path name="temp3c" style ="display : none" d="M181.71 46.875L111.82 167.932c-3.406 5.898-3.665 9.68-.778 11.347M125.785 15.741L55.893 136.798c-3.405 5.898-6.551 8.014-9.438 6.347" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="organ3c" style ="display : none" d="M143.289 24.146L76.457 139.901c-14.612 25.31-27.622 31.177-42.055 22.843M165.006 35.53l-66.83 115.755c-14.613 25.31-13.19 39.51 1.244 47.843" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="light3c" style ="display : none" d="M41.952 150.54c-.695-.349.734.476 4.287 2.475 24.512 13.786 53.87 13.42 99.977-66.44l31.22-54.073" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="light3c" style ="display : none" d="M105.282 187.103c.65.428-.78-.397-4.287-2.475-24.195-14.335-38.557-39.944 7.55-119.802l31.219-54.074" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="oxy3c" style ="display : none" d="M93.016 209.46c.444.318-.557-.26-3.004-1.735-16.883-10.176-23.427-34.225 30.545-127.706l36.545-63.298" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="oxy3c" style ="display : none" d="M29.156 172.59c-.497-.225.504.353 3.005 1.735 17.254 9.533 41.352 3.175 95.324-90.306L164.03 20.72" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="light3c" style ="display : none" d="M146.77 4.116l-7.598 7.16 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/> 
+							    <path name="oxy3c" style ="display : none" d="M162.359 13.116l-5.165 3.946.835-6.446" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="oxy3c" style ="display : none" d="M168.854 16.866l-5.165 3.946.835-6.446" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="organ3c" style ="display : none" d="M150.93 16.91c-3.35 5.763-5.883 8.15-7.598 7.16-1.735-1.115-.934-4.502 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="organ3c" style ="display : none" d="M172.65 28.296c-3.35 5.763-5.884 8.15-7.598 7.16-1.735-1.116-.934-4.502 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="light3c" style ="display : none" d="M185.375 25.25l-7.598 7.16 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <g font-size="15" font-family="AvenirNext-Regular, Avenir Next" fill="#3B3B3B">
+							      <text name="tempPlus" style ="display : none" transform="rotate(-60 143.294 24.863)"> 
+							        <tspan x="0" y="15">+</tspan>
+							      </text>
+							    </g>
+							    <g font-size="15" font-family="AvenirNext-Regular, Avenir Next" fill="#3B3B3B">
+							    	<text name="tempPlus" style ="display : none" transform="rotate(-60 189.194 -1.637)">
+							        <tspan x="0" y="15">+</tspan>
+							      </text>
+							    </g>
+							    <g font-size="15" font-family="AvenirNext-Regular, Avenir Next" fill="#3B3B3B">
+							      <text name="lightPlus" style ="display : none" transform="rotate(-60 193.23 13.354)">
+							        <tspan x="0" y="15">+</tspan>
+							      </text>
+							    </g>
+							    <g font-size="15" font-family="AvenirNext-Regular, Avenir Next" fill="#3B3B3B">
+							      <text name="lightPlus" style ="display : none" transform="rotate(-60 154.258 35.854)">
+							        <tspan x="0" y="15">+</tspan>
+							      </text>
+							    </g>
+							    <g font-size="15" font-family="AvenirNext-Regular, Avenir Next" fill="#3B3B3B">
+							      <text name="organPlus" style ="display : none" transform="rotate(30 -236.463 165.364)">
+							        <tspan x="0" y="30">+</tspan>
+							      </text>
+							    </g>
+							    <g font-size="15" font-family="AvenirNext-Regular, Avenir Next" fill="#3B3B3B">
+							      <text name="organPlus" style ="display : none" transform="rotate(30 -262.23 276.46)">
+							        <tspan x="0" y="30">+</tspan>
+							      </text>
+							    </g>
+							    <g font-size="15" font-family="AvenirNext-Regular, Avenir Next" fill="#3B3B3B">
+							      <text name="oxyPlus" style ="display : none" transform="rotate(30 -291.32 250.666)">
+							        <tspan x="0" y="30">+</tspan>
+							      </text>
+							    </g>
+							    <g font-size="15" font-family="AvenirNext-Regular, Avenir Next" fill="#3B3B3B">
+							      <text name="oxyPlus" style ="display : none" transform="rotate(30 -270.82 174.159)">
+							        <tspan x="0" y="30">+</tspan>
+							      </text>
+							    </g>
+							  </g>
+							</svg>
+						</div>
+					</div>
+				</div>
 			</div>
+
 		</div>
 
-		<!-- left part -->
-		<div class="ui horizontal segments">
-		  <div class="ui segment">
-		  	<div id="leftpart">
-		  	<div class='lp'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Praes
-		  		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Praes
-		  		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum.
-		  	</div>
-		  	</div>
-			</div>
-	<!-- 		right part	 -->	
-			<div class="ui segment">
-				<div id="rightpart">
-				<div class='lp'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Praes Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Praes Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum. Praes Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ornare porta nunc. Praesent vestibulum eleifend augue ut lacinia. Sed lectus lectus, tempor eu blandit nec, gravida non arcu. Sed quam ex, hendrerit vel risus at, accumsan ultricies ipsum.
-				</div>
-				</div>
-			</div>
-		</div>
-
+		<!-- footnote area -->	
 		<div class=main id="area2"</a></div>
 
 		<script>
@@ -213,7 +451,54 @@
   			console.log(this.value);
 			}
 
-		</script>
+			//vehicle configuration
+			vehicle2a.style.display = "block";
+			$('#select2a').on("click", function() {
+			    vehicle2a.style.display = "block";
+			    vehicle2b.style.display = "none";
+			});
+			$('#select2b').on("click", function() {
+			    vehicle2a.style.display = "none";
+			    vehicle2b.style.display = "block";
+			});
 
+			vehicle3a.style.display = "block";
+			$('#select3a').on("click", function() {
+			    vehicle3a.style.display = "block";
+			    vehicle3b.style.display = "none";
+			});
+			$('#select3b').on("click", function() {
+			    vehicle3a.style.display = "none";
+			    vehicle3b.style.display = "block";
+			});
+
+			console.log("pageload");
+
+    	function toggle_visibility(id) {
+       	var e = document.getElementsByName(id);
+       	for (var i = e.length - 1; i >= 0; i--) {
+       		if(e[i].style.display == 'block')
+       	 		e[i].style.display = 'none';
+       	 	else
+       	 		e[i].style.display = 'block';
+       	  }
+    	}
+
+    	function switch_visibility(id1,id2) {
+       	var e = document.getElementsByName(id1);
+       	var f = document.getElementsByName(id2);
+       	for (var i = e.length - 1; i >= 0; i--) {
+	       	if(f[i].style.display == 'block') {
+	     	 		f[i].style.display = 'none';
+	     	 		e[i].style.display = 'block';
+	     	 	}
+	       	else {
+	     	 		f[i].style.display = 'block';
+	     	 		e[i].style.display = 'none';
+	     	 	}
+	     	}
+    	}
+
+		</script>
 	</body>
 </html>
