@@ -1,4 +1,5 @@
 class Vehicle {
+
     constructor(opts) {
         this.x = opts.x;
         this.y = opts.y;
@@ -36,8 +37,9 @@ class Vehicle {
     }
 
     dom() {
+
         var domVehicle = d3.select(document.createElementNS(d3.namespaces.svg, 'g'));
-        var vselect = 1;
+        var vselect =6;
 
           switch(vselect) {
           case 1:
@@ -66,11 +68,34 @@ class Vehicle {
             .attr('x', -this.w/2)
             .attr('y', -this.h/2);
           break;
-          }
 
-        // domVehicle.append('line')
-        //     .attr('x1', 0)
-        //     .attr('x2', this.w/2);
+          case 4:
+            domVehicle.append('svg:image')
+            .attr("xlink:href", "3a_dark.svg")
+            .attr('width', this.w)
+            .attr('height', this.h)
+            .attr('x', -this.w/2)
+            .attr('y', -this.h/2);
+          break;
+
+          case 5:
+            domVehicle.append('svg:image')
+            .attr("xlink:href", "3b_dark.svg")
+            .attr('width', this.w)
+            .attr('height', this.h)
+            .attr('x', -this.w/2)
+            .attr('y', -this.h/2);
+          break;
+
+          case 6:
+            domVehicle.append('svg:image')
+            .attr("xlink:href", "3c_dark.svg")
+            .attr('width', this.w)
+            .attr('height', this.h)
+            .attr('x', -this.w/2)
+            .attr('y', -this.h/2);
+          break;
+          }
 
         return domVehicle.node();
     }
