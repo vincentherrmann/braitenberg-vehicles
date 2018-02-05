@@ -13,7 +13,7 @@
 		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.1.1/d3.min.js"></script>
 		<script src="collision.js"></script>
-		<script src="vehicles_new.js"></script>
+		<script src="vehicles.js"></script>
 		<script src="environment.js"></script>
 	</head>
 
@@ -40,13 +40,13 @@
 				<input type="number" name="inputL"placeholder="number of lights" id=InLights>
 			</div>
 
-	  	<label for="slidMinVelocity">min. speed:&nbsp;&nbsp;<g id="chosen1">50&nbsp;&nbsp;&nbsp;</g><span class="value"></span></label>
-	  	<input type="range" name="slider1" min="1" max="100" value="50" class="slider" id="slidMinVelocity">
-			<label for="slidMaxVelocity">max. speed:&nbsp;&nbsp;<g id="chosen2">50&nbsp;&nbsp;&nbsp;</g><span class="value"></span></label>
-			<input type="range" name="slider2" min="1" max="100" value="50" class="slider" id="slidMaxVelocity">
+	  	<label for="slidMinVelocity">min. speed:&nbsp;&nbsp;<g id="chosen1">2&nbsp;&nbsp;&nbsp;</g><span class="value"></span></label>
+	  	<input type="range" name="slider1" min="0.0" max="4.0" value="2.0" onmouseup="simulation.restart()" class="slider" id="slidMinVelocity">
+			<label for="slidMaxVelocity">max. speed:&nbsp;&nbsp;<g id="chosen2">2&nbsp;&nbsp;&nbsp;</g><span class="value"></span></label>
+			<input type="range" name="slider2" min="0.0" max="4.0" value="2.0" onmouseup="simulation.restart()" class="slider" id="slidMaxVelocity">
 			<label for="slidSensorSens">sensibility:&nbsp;&nbsp;<g id="chosen3">50&nbsp;&nbsp;&nbsp;</g><span class="value"></span></label>
-			<input type="range" name="slider3" min="1" max="100" value="50" class="slider" id="slidSensorSens">
-			<button onclick="simulation.restart()" class="mini grey ui button" id=apply-button1 title="apply changes1">apply</button>
+			<input type="range" name="slider3" min="1" max="100" value="50" onmouseup="simulation.restart()" class="slider" id="slidSensorSens">
+			<button onclick="simulation.alpha()" class="mini grey ui button" id=apply-button1 title="apply changes1">apply</button>
 		</div>
 
 		<!-- configuration ara -->
@@ -75,11 +75,16 @@
 						be pointing.<br>
 						It will slow down in regions with lower sensor activation and speed up where it's sensor receives higher activation values.<br>
 						<br>
-						"Imagine, now, what you would think if you saw such a vehicle swimming around in a pond. It is restless, you would say, and does not like warm water. But it is quite stupid, since it is not able to turn back to the nice cold spot it overshot in its restlessness. Anyway, you would say, it is ALIVE, since you have never seen a particle of dead matter move around quite like that."
+						"Imagine, now, what you would think if you saw such a vehicle swimming around in a pond. It is restless, you would say, and does not like warm water. But it is quite stupid, since it is not able to turn back to the nice cold spot it overshot in its restlessness. Anyway, you would say, it is ALIVE, since you have never seen a particle of dead matter move around quite like that."<br>
+						<br>
+						push the button on the right to deploy this vehicle.
 					</div>
 					<!-- 		right part	 -->
 					<div class="ui segment" id="rightpart">
 						<b>Vehicle configuration:</b> <br>
+						<div id="select1">
+						<div id="select1elem"><button class="mini ui button" id=select1 onclick="changeVehicle(1)" title="1 (getting around)" style="margin-left:0%;">1 (getting around)</button><x></div>
+						</div id="select1">
 						<div id="figures">
 							<svg width="109" height="163" xmlns="http://www.w3.org/2000/svg" id="vehicle1">
 							  <g transform="rotate(30 49.08 145.849)" stroke="#3B3B3B" stroke-width="1.5" fill="none" fill-rule="evenodd">
@@ -110,14 +115,16 @@
 					 	Vehicle 2a will spend more time in the places where its sensors will be less excited and will speed up when it is exposed to higher concentrations of exciting environmental qualities. Depending on the different excitation of the two sensors, the two motors of the vehicle will run at different speeds and therefore steer the vehicle in a certain direction.<br>
 					  <br>
 					  "Let Vehicles 2a and 2b move around in their world for a while and watch them. Their characters are quite opposite. Both DISLIKE sources. But 2a becomes restless in their vicinity and tends to avoid them, escaping until it safely reaches a place where the influence of the source is scarcely felt. Vehicle 2a is a COWARD, you would say. Not so Vehicle 2b. It, too, is excited by the<br>
-					  presence of sources, but resolutely turns toward them and hits them with high velocity, as if it wanted to destroy them. Vehicle 2b is AGGRESSIVE, obviously."
+					  presence of sources, but resolutely turns toward them and hits them with high velocity, as if it wanted to destroy them. Vehicle 2b is AGGRESSIVE, obviously."<br>
+					  <br>
+					  click the buttons on the right to deploy one of the vehicles.
 					</div>
 					<!-- 		right part	 -->
 					<div class="ui segment" id="rightpart">
 						<b>Vehicle configuration:</b><br>
 						<div id="select2">
-							<div id="select2elem"><button class="mini ui button" id=select2a title="2a (Fear)">2a (Fear)</button><x></div>
-							<div id="select2elem"><button class="mini ui button" id=select2b title="2a (Fear)">2b (Agression)</button><x></div>
+							<div id="select2elem"><button class="mini ui button" id=select2a onclick="changeVehicle(2)" title="2a (Fear)">2a (Fear)</button><x></div>
+							<div id="select2elem"><button class="mini ui button" id=select2b onclick="changeVehicle(3)" title="2b (Agression)">2b (Agression)</button><x></div>
 						</div id="select2">
 						<div id="figures">
 							<svg width="149" height="171" xmlns="http://www.w3.org/2000/svg" id="vehicle2a">
@@ -160,7 +167,7 @@
 				<!-- left part -->
 				<div class="ui horizontal segments" id = horizSeg>
 				  <div class="ui segment" id="leftpart">
-				  	<b>Vehicle 3a/3b: Love/Explore</b> <br><br>
+				  	<b>Vehicle 3a/3b: Love/Explore</b> <br>
 				  	<br>
 				  	Lover: stays with the first encountered stimuli forever<br>
 				  	Explorer: moves towards certain environmental qualities and then drifts away to find a new one <br>
@@ -169,14 +176,16 @@
 				  	configuration 3a will steer towards the stimuli with it's weels turning slower as it approaches. Upon reaching the source, the vehicle will stop moving completely and stay there forever. <br>
 				  	The vehicle with configuration 3b will move very slow when it's out of the reach of the stimuli and pick up movement in another direction as soon as it encounters a slight change in the environment, rushing towards it in an accelerative manner.<br>
 				  	<br>
-				  	"These vehicles LIKE the source, you will say, but in different ways. Vehicle 3 a LOVES it in a permanent way, staying close by in quiet admiration from the time it spots the source to all future time. Vehicle 3 b, on the other hand, is an EXPLORER. It likes the nearby source all right, but keeps an eye open for other, perhaps stronger sources, which it will sail to, given a chance, in order to find a more permanent and gratifying appeasement."
+				  	"These vehicles LIKE the source, you will say, but in different ways. Vehicle 3 a LOVES it in a permanent way, staying close by in quiet admiration from the time it spots the source to all future time. Vehicle 3 b, on the other hand, is an EXPLORER. It likes the nearby source all right, but keeps an eye open for other, perhaps stronger sources, which it will sail to, given a chance, in order to find a more permanent and gratifying appeasement."<br>
+				  	<br>
+				  	click the buttons on the right to deploy one of the vehicles.
 					</div>
 					<!-- 		right part	 -->
 					<div class="ui segment" id="rightpart">
 						<b>Vehicle configuration:</b>
 						<div id="select3">
-							<div id="select3elem"><button class="mini ui button" id=select3a title="3a (Love)">3a (Love)</button><x></div>
-							<div id="select3elem"><button class="mini ui button" id=select3b title="3b (Explore)">3b (Explore)</button><x></div>
+							<div id="select3elem"><button class="mini ui button" id=select3a onclick="changeVehicle(4)" title="3a (Love)">3a (Love)</button><x></div>
+							<div id="select3elem"><button class="mini ui button" id=select3b onclick="changeVehicle(5)" title="3b (Explore)">3b (Explore)</button><x></div>
 						</div id="select3">
 						<div id="figures">
 							<svg width="149" height="171" xmlns="http://www.w3.org/2000/svg" id="vehicle3a">
@@ -227,28 +236,31 @@
 					  As it's sensible to a variety of different paramters as opposed to just one, vehicle 3c displays more complex behavior:<br>
 					  It could drift away from high temperature, turns away from hot places, and at the same time turns towards light bulbs and rushed towards them, therefore destroying them. It will also stay longer in a well-oxygenated environment containing many organic molecules.<br>
 					  <br>
-						"You cannot help admitting that Vehicle 3C has a system of VALUES, and, come to think of it, KNOWLEDGE, since some of the habits it has, like destroying light bulbs, may look quite knowledgeable, as if the vehicle knows that light bulbs tend to heat up the environment and consequently make it uncomfortable to live in. It also looks as if it knows about the possibility of making energy out of oxygen and organic matter because it prefers places where these two commodities are available."
+						"You cannot help admitting that Vehicle 3C has a system of VALUES, and, come to think of it, KNOWLEDGE, since some of the habits it has, like destroying light bulbs, may look quite knowledgeable, as if the vehicle knows that light bulbs tend to heat up the environment and consequently make it uncomfortable to live in. It also looks as if it knows about the possibility of making energy out of oxygen and organic matter because it prefers places where these two commodities are available." <br>
+						<br>
+						use the configuration on the right to deploy different combinations of sensors for this vehicle.
 					</div>
 					<!-- 		right part	 -->
 					<div class="ui segment" id="rightpart">
 						<b>Vehicle configuration:</b>
 						<div class="select3c1">
-							<div id="select3celem" class="ui toggle checkbox" id="selectTemp" onclick="toggle_visibility('temp3c');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>temperature</label></div>
-							<div id="select3cslid" class=" red ui slider checkbox" id="selectTempPol" onclick="switch_visibility('tempPlus','tempMinus');"> <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
+							<div id="select3celem" class="ui toggle checkbox" id="selectTemp" onclick="toggle_visibility('temp3c');visCorr('temp3c','tempPlus','tempMinus');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>temperature</label></div>
+							<div id="select3cslid" class=" red ui slider checkbox" id="selectTempPol" onclick="switch_visibility('temp3c','tempPlus','tempMinus');"> <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
 						</div>
 						<div class="select3c2">
-							<div id="select3celem" class="ui toggle checkbox" id="selectLight" onclick="toggle_visibility('light3c');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>light</label></div>
-							<div id="select3cslid" class="ui slider checkbox" id="selectLightPol" onclick="switch_visibility('lightPlus','lightMinus');" > <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
+							<div id="select3celem" class="ui toggle checkbox" id="selectLight" onclick="toggle_visibility('light3c');visCorr('light3c','lightPlus','lightMinus');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>light</label></div>
+							<div id="select3cslid" class="ui slider checkbox" id="selectLightPol" onclick="switch_visibility('light3c','lightPlus','lightMinus');" > <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
 						</div>
 						<div class="select3c3">
-							<div id="select3celem" class="ui toggle checkbox" id="selectOrgan" onclick="toggle_visibility('organ3c');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>organic matter</label></div>
-							<div id="select3cslid" class="ui slider checkbox" id="selectOrganPol" onclick="switch_visibility('organPlus','organMinus');"> <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
+							<div id="select3celem" class="ui toggle checkbox" id="selectOrgan" onclick="toggle_visibility('organ3c');visCorr('organ3c','organPlus','organMinus');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>organic matter</label></div>
+							<div id="select3cslid" class="ui slider checkbox" id="selectOrganPol" onclick="switch_visibility('organ3c','organPlus','organMinus');"> <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
 						</div>
 						<div class="select3c4">
-							<div id="select3celem" class="ui toggle checkbox" id="selectOxy" onclick="toggle_visibility('oxy3c');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>oxygen</label></div>
-							<div id="select3cslid" class="ui slider checkbox" id="selectOxyPol" onclick="switch_visibility('oxyPlus','oxyMinus');"> <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
+							<div id="select3celem" class="ui toggle checkbox" id="selectOxy" onclick="toggle_visibility('oxy3c');visCorr('oxy3c','oxyPlus','oxyMinus');"> <input type="checkbox" style ="margin-top:7%;margin-left:7%" name="public"><label>oxygen</label></div>
+							<div id="select3cslid" class="ui slider checkbox" id="selectOxyPol" onclick="switch_visibility('oxy3c','oxyPlus','oxyMinus');"> <input type="checkbox" style ="margin-top:35%;margin-left:35%" name="public"><label>polarity</label></div>
 						</div>
-						<div id="figures">
+						<div id="select3celem"><button class="mini ui button" id=select3c onclick="changeVehicle(6)" title="3c deploy" style="margin-left:10%;">deploy</button><x></div>
+						<div id="figures">						
 						<svg id="vehicle3c" width="194" height="233" xmlns="http://www.w3.org/2000/svg">
 							  <g fill="none" fill-rule="evenodd">
 							    <g transform="rotate(30 31.42 201.244)" fill-rule="nonzero">
@@ -264,8 +276,8 @@
 							      <rect stroke="#3B3B3B" stroke-width="1.5" x=".928" y="1.085" width="27.836" height="58.579" rx="2"/>
 							    </g>
 							    <!-- temperatur sensor top -->
-							    <path name="temp3c" style ="display : none" d="M188.2 45.356c-3.068 2.078-5.325 2.699-6.773 1.863-1.447-.835-2.076-3.123-1.887-6.863M132.775 13.356c-3.068 2.078-5.326 2.699-6.773 1.863-1.447-.835-2.076-3.123-1.887-6.863" stroke="#3B3B3B" stroke-width="1.5"/>
-							    <path name="temp3c" style ="display : none" d="M132.775 13.356c-3.068 2.078-5.326 2.699-6.773 1.863-1.447-.835-2.076-3.123-1.887-6.863" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="temp3c" id="temp3c" style ="display : none" d="M188.2 45.356c-3.068 2.078-5.325 2.699-6.773 1.863-1.447-.835-2.076-3.123-1.887-6.863M132.775 13.356c-3.068 2.078-5.326 2.699-6.773 1.863-1.447-.835-2.076-3.123-1.887-6.863" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="temp3c" id="temp3c" style ="display : none" d="M132.775 13.356c-3.068 2.078-5.326 2.699-6.773 1.863-1.447-.835-2.076-3.123-1.887-6.863" stroke="#3B3B3B" stroke-width="1.5"/>
 							    <g font-size="30" font-family="AvenirNext-Regular, Avenir Next" fill="#3B3B3B">
 							    	<text name="tempMinus" style ="display : none" transform="rotate(30 -180.32 180.666)">
 							        <tspan x="0" y="30">-</tspan>
@@ -292,20 +304,20 @@
 							        <tspan x="0" y="30">-</tspan>
 							      </text>
 							    </g>
-							   <path name="temp3c" style ="display : none" d="M181.71 46.875L111.82 167.932c-3.406 5.898-3.665 9.68-.778 11.347M125.785 15.741L55.893 136.798c-3.405 5.898-6.551 8.014-9.438 6.347" stroke="#3B3B3B" stroke-width="1.5"/>
+							   <path name="temp3c" id="temp3c style ="display : none" d="M181.71 46.875L111.82 167.932c-3.406 5.898-3.665 9.68-.778 11.347M125.785 15.741L55.893 136.798c-3.405 5.898-6.551 8.014-9.438 6.347" stroke="#3B3B3B" stroke-width="1.5"/>
 							    <path name="organ3c" style ="display : none" d="M143.289 24.146L76.457 139.901c-14.612 25.31-27.622 31.177-42.055 22.843M165.006 35.53l-66.83 115.755c-14.613 25.31-13.19 39.51 1.244 47.843" stroke="#3B3B3B" stroke-width="1.5"/>
-							    <path name="light3c" style ="display : none" d="M41.952 150.54c-.695-.349.734.476 4.287 2.475 24.512 13.786 53.87 13.42 99.977-66.44l31.22-54.073" stroke="#3B3B3B" stroke-width="1.5"/>
-							    <path name="light3c" style ="display : none" d="M105.282 187.103c.65.428-.78-.397-4.287-2.475-24.195-14.335-38.557-39.944 7.55-119.802l31.219-54.074" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="light3c" id="light3c" style ="display : none" d="M41.952 150.54c-.695-.349.734.476 4.287 2.475 24.512 13.786 53.87 13.42 99.977-66.44l31.22-54.073" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="light3c" id="light3c" style ="display : none" d="M105.282 187.103c.65.428-.78-.397-4.287-2.475-24.195-14.335-38.557-39.944 7.55-119.802l31.219-54.074" stroke="#3B3B3B" stroke-width="1.5"/>
 							    <path name="oxy3c" style ="display : none" d="M93.016 209.46c.444.318-.557-.26-3.004-1.735-16.883-10.176-23.427-34.225 30.545-127.706l36.545-63.298" stroke="#3B3B3B" stroke-width="1.5"/>
 							    <path name="oxy3c" style ="display : none" d="M29.156 172.59c-.497-.225.504.353 3.005 1.735 17.254 9.533 41.352 3.175 95.324-90.306L164.03 20.72" stroke="#3B3B3B" stroke-width="1.5"/>
-							    <path name="light3c" style ="display : none" d="M146.77 4.116l-7.598 7.16 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/>
-							    <path name="oxy3c" style ="display : none" d="M162.359 13.116l-5.165 3.946.835-6.446" stroke="#3B3B3B" stroke-width="1.5"/>
-							    <path name="oxy3c" style ="display : none" d="M168.854 16.866l-5.165 3.946.835-6.446" stroke="#3B3B3B" stroke-width="1.5"/>
-							    <path name="organ3c" style ="display : none" d="M150.93 16.91c-3.35 5.763-5.883 8.15-7.598 7.16-1.735-1.115-.934-4.502 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/>
-							    <path name="organ3c" style ="display : none" d="M172.65 28.296c-3.35 5.763-5.884 8.15-7.598 7.16-1.735-1.116-.934-4.502 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/>
-							    <path name="light3c" style ="display : none" d="M185.375 25.25l-7.598 7.16 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="light3c" id="light3c" style ="display : none" d="M146.77 4.116l-7.598 7.16 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/> 
+							    <path name="oxy3c" id="oxy3c" style ="display : none" d="M162.359 13.116l-5.165 3.946.835-6.446" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="oxy3c" id="oxy3c" style ="display : none" d="M168.854 16.866l-5.165 3.946.835-6.446" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="organ3c" id="organ3c" style ="display : none" d="M150.93 16.91c-3.35 5.763-5.883 8.15-7.598 7.16-1.735-1.115-.934-4.502 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="organ3c" id="organ3c" style ="display : none" d="M172.65 28.296c-3.35 5.763-5.884 8.15-7.598 7.16-1.735-1.116-.934-4.502 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/>
+							    <path name="light3c" id="light3c" style ="display : none" d="M185.375 25.25l-7.598 7.16 2.402-10.16" stroke="#3B3B3B" stroke-width="1.5"/>
 							    <g font-size="15" font-family="AvenirNext-Regular, Avenir Next" fill="#3B3B3B">
-							      <text name="tempPlus" style ="display : none" transform="rotate(-60 143.294 24.863)">
+							      <text name="tempPlus" id="tempPlus" style ="display : none" transform="rotate(-60 143.294 24.863)"> 
 							        <tspan x="0" y="15">+</tspan>
 							      </text>
 							    </g>
@@ -374,6 +386,8 @@
 		    lightDistance = 200.,
 		    noisyMotion = 0.1;
 
+		var vselect = 1;
+
 		var vehicles_data = Array.apply(null, Array(numVehicles)).map(function (_, i) {
 		  var v = 0;
 		  return {
@@ -406,92 +420,87 @@
 
 		var defs = svg.append("defs");
 
-		svg.append("rect")
-		  .attr("width", width)
-		  .attr("height", height)
-		  .attr("fill", "#1D1F21")
-
 		var [vehicles, simulation] = createVehicles(vehicles_data);
 		var [light, lights] = createCircularLight(lights_data);
 
-			// tab control
-			$(document).ready(function(){
-			   $('.ui .item').on('click', function() {
-			      $('.ui .item').removeClass('active');
-			      $(this).addClass('active');
-			      var tab = $(this).attr("data-tab");
-			    	$(".tab.segment").removeClass("active");
-			    	$(".tab.segment[data-tab=\"" + tab + "\"]").addClass("active");
-			   });
-			});
+		// tab control
+		$(document).ready(function(){
+		   $('.ui .item').on('click', function() {
+		      $('.ui .item').removeClass('active');
+		      $(this).addClass('active');
+		      var tab = $(this).attr("data-tab");
+		    	$(".tab.segment").removeClass("active");
+		    	$(".tab.segment[data-tab=\"" + tab + "\"]").addClass("active");
+		   });             
+		});	
 
-			//slider control:
-			var slider1 = document.getElementById('slidMinVelocity');
-			slider1.addEventListener('input', sliderChange1);
+		//slider control:
+		var slider1 = document.getElementById('slidMinVelocity');
+		slider1.addEventListener('input', sliderChange1);
 
-			var slider2 = document.getElementById('slidMaxVelocity');
-			slider2.addEventListener('input', sliderChange2);
+		var slider2 = document.getElementById('slidMaxVelocity');
+		slider2.addEventListener('input', sliderChange2);
 
-			var slider3 = document.getElementById('slidSensorSens');
-			slider3.addEventListener('input', sliderChange3);
+		var slider3 = document.getElementById('slidSensorSens');
+		slider3.addEventListener('input', sliderChange3);
 
-			function sliderChange1() {
-				var display = document.getElementById("chosen1");
-				display.innerHTML=this.value;
-				Vehicle.minVelocity = this.value;
-  			console.log("min Velocitx Slider= " + this.value);
-			}
+		function sliderChange1() {
+			var display = document.getElementById("chosen1");
+			display.innerHTML=this.value;
+			Vehicle.minVelocity = this.value;
+			console.log("min Velocity Slider= " + this.value);
+		}
 
-			function sliderChange2() {
-				var display = document.getElementById("chosen2");
-				display.innerHTML=this.value;
-				Vehicle.maxVelocity = this.value;
-  			console.log("max Velocitx Slider= " + this.value);
-			}
+		function sliderChange2() {
+			var display = document.getElementById("chosen2");
+			display.innerHTML=this.value;
+			Vehicle.maxVelocity = this.value;
+			console.log("max Velocity Slider= " + this.value);
+		}
 
-			function sliderChange3() {
-				var display = document.getElementById("chosen3");
-				display.innerHTML=this.value;
-  			console.log(this.value);
-			}
+		function sliderChange3() {
+			var display = document.getElementById("chosen3");
+			display.innerHTML=this.value;
+			Vehicle.lightFactor = this.value;
+			console.log(this.value);
+		}
 
-			//vehicle configuration
-			vehicle2a.style.display = "block";
-			$('#select2a').on("click", function() {
-			    vehicle2a.style.display = "block";
-			    vehicle2b.style.display = "none";
-			});
-			$('#select2b').on("click", function() {
-			    vehicle2a.style.display = "none";
-			    vehicle2b.style.display = "block";
-			});
+		//vehicle configuration
+		vehicle2a.style.display = "block";
+		$('#select2a').on("click", function() {
+		    vehicle2a.style.display = "block";
+		    vehicle2b.style.display = "none";
+		});
+		$('#select2b').on("click", function() {
+		    vehicle2a.style.display = "none";
+		    vehicle2b.style.display = "block";
+		});
 
-			vehicle3a.style.display = "block";
-			$('#select3a').on("click", function() {
-			    vehicle3a.style.display = "block";
-			    vehicle3b.style.display = "none";
-			});
-			$('#select3b').on("click", function() {
-			    vehicle3a.style.display = "none";
-			    vehicle3b.style.display = "block";
-			});
+		vehicle3a.style.display = "block";
+		$('#select3a').on("click", function() {
+		    vehicle3a.style.display = "block";
+		    vehicle3b.style.display = "none";
+		});
+		$('#select3b').on("click", function() {
+		    vehicle3a.style.display = "none";
+		    vehicle3b.style.display = "block";
+		});
 
-			console.log("pageload");
+  	function toggle_visibility(id) {
+     	var e = document.getElementsByName(id);
+     	for (var i = e.length - 1; i >= 0; i--) {
+     		if(e[i].style.display == 'block')
+     	 		e[i].style.display = 'none';
+     	 	else
+     	 		e[i].style.display = 'block';
+     	  }
+  	}
 
-    	function toggle_visibility(id) {
-       	var e = document.getElementsByName(id);
-       	for (var i = e.length - 1; i >= 0; i--) {
-       		if(e[i].style.display == 'block')
-       	 		e[i].style.display = 'none';
-       	 	else
-       	 		e[i].style.display = 'block';
-       	  }
-    	}
-
-    	function switch_visibility(id1,id2) {
-       	var e = document.getElementsByName(id1);
-       	var f = document.getElementsByName(id2);
-       	for (var i = e.length - 1; i >= 0; i--) {
+  	function switch_visibility(ref,id1,id2) {
+     	var e = document.getElementsByName(id1);
+     	var f = document.getElementsByName(id2);
+     	if(document.getElementById(ref).style.display != "none") {
+	     	for (var i = e.length - 1; i >= 0; i--) {
 	       	if(f[i].style.display == 'block') {
 	     	 		f[i].style.display = 'none';
 	     	 		e[i].style.display = 'block';
@@ -501,7 +510,29 @@
 	     	 		e[i].style.display = 'none';
 	     	 	}
 	     	}
-    	}
+	    }
+  	}
+
+    function changeVehicle(selection) {
+				vselect = selection;
+				console.log("vselect = " + vselect);
+		}
+
+		function visCorr(id1,id2,id3) {
+			if(document.getElementById(id1).style.display == "none") {
+				console.log("invisible")
+				for(i=0;i<=1;i++){
+					document.getElementsByName(id2)[i].style.display = 'none';
+					document.getElementsByName(id3)[i].style.display = 'none';
+				}
+			}
+			else{
+				console.log("visible")
+				for(i=0;i<=1;i++){
+					document.getElementsByName(id2)[i].style.display = 'block';
+				}
+			}
+		}
 
 		</script>
 	</body>

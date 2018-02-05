@@ -135,18 +135,24 @@ label
 
 #vehicle3a {
   position: relative;
-  width : 10%;
+  width : 40%;
   height: 30%;
 }
 
 #vehicle3b {
   position: relative;
-  width : 10%;
+  width : 40%;
   height: 30%;
 }
 
+#vehicle3c {
+  position: relative;
+  width : 50%;
+  height: 10%;
+}
+
 #figures {
-  margin-top : 50%;
+  margin-top : 30%;
   display:table; width:100%;
   text-align: center;
 }
@@ -157,7 +163,6 @@ label
 
 #rightpart {
   width : 50%;
-  background-color : red;
 }
 
 #leftpart {
