@@ -79,7 +79,7 @@
 						<br>
 						push the button on the right to deploy this vehicle.
 					</div>
-					<!-- 		right part	 -->	
+					<!-- 		right part	 -->
 					<div class="ui segment" id="rightpart">
 						<b>Vehicle configuration:</b> <br>
 						<div id="select1">
@@ -119,7 +119,7 @@
 					  <br>
 					  click the buttons on the right to deploy one of the vehicles.
 					</div>
-					<!-- 		right part	 -->	
+					<!-- 		right part	 -->
 					<div class="ui segment" id="rightpart">
 						<b>Vehicle configuration:</b><br>
 						<div id="select2">
@@ -162,8 +162,8 @@
 				</div>
 			</div>
 
-			<!-- third tab content -->	
-			<div class="ui bottom attached tab segment" data-tab="third"> 
+			<!-- third tab content -->
+			<div class="ui bottom attached tab segment" data-tab="third">
 				<!-- left part -->
 				<div class="ui horizontal segments" id = horizSeg>
 				  <div class="ui segment" id="leftpart">
@@ -180,7 +180,7 @@
 				  	<br>
 				  	click the buttons on the right to deploy one of the vehicles.
 					</div>
-					<!-- 		right part	 -->	
+					<!-- 		right part	 -->
 					<div class="ui segment" id="rightpart">
 						<b>Vehicle configuration:</b>
 						<div id="select3">
@@ -223,7 +223,7 @@
 				</div>
 			</div>
 
-			<!-- fourth tab content -->	
+			<!-- fourth tab content -->
 			<div class="ui bottom attached tab segment" data-tab="fourth">
 			  <!-- left part -->
 				<div class="ui horizontal segments" id = horizSeg>
@@ -240,7 +240,7 @@
 						<br>
 						use the configuration on the right to deploy different combinations of sensors for this vehicle.
 					</div>
-					<!-- 		right part	 -->	
+					<!-- 		right part	 -->
 					<div class="ui segment" id="rightpart">
 						<b>Vehicle configuration:</b>
 						<div class="select3c1">
@@ -284,7 +284,7 @@
 							      </text>
 							      <text name="tempMinus" style ="display : none" transform="rotate(30 -208.194 280)">
 							        <tspan x="0" y="30">-</tspan>
-							      </text>							    	
+							      </text>
 							    	<text name="lightMinus" style ="display : none" transform="rotate(30 -232.194 270)">
 							        <tspan x="0" y="30">-</tspan>
 							      </text>
@@ -365,13 +365,17 @@
 
 		</div>
 
-		<!-- footnote area -->	
+		<!-- footnote area -->
 		<div class=main id="area2"</a></div>
 
 		<script>
 
-		var width = 1127,
-		    height = 500;
+		var contentDiv = document.getElementById("content");
+		var contentWidth = contentDiv.clientWidth,
+				contentHeight = contentDiv.clientHeight;
+
+		var width = contentWidth - 100; //1127,
+		    height = contentHeight * 0.8; //500;
 		    margin = 10;
 
 		var minVelocity = 0.,

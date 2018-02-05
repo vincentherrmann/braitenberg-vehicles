@@ -104,6 +104,15 @@ class CircularSource {
         .attr("transform", "translate(" + d.x + ", " + d.y + ")");
   }
 
+  scale(d) {
+    var dom = d3.select(this);
+    var diffX = this.x - d3.event.x;
+    var diffY = this.y - d3.event.y;
+    var newStrength = diffX*diffX + diffY*diffY;
+    this.strength = Math.min(Math.max(newStrength, 0), maximum_strength);
+    console.log("new strength: ", this.strength);
+  }
+
   dom() {
     var domSource = d3.select(document.createElementNS(d3.namespaces.svg, 'g'));
     var self = this;
@@ -113,12 +122,22 @@ class CircularSource {
         .attr('fill', 'url(#gradient_' + this.id + ')')
         .attr('class', 'field');
 
+    var r = Math.sqrt(this.strength)
+    var arc = d3.arc()
+                .innerRadius(r)
+                .outerRadius(r+5)
+                .startAngle(0)
+                .endAngle(2*Math.PI);
+
     domSource.append('circle')
-        .attr('r', Math.sqrt(this.strength))
-        .attr('stroke', '#000')
-        .attr('stroke-width', '2px')
-        .attr('stroke-opacity', '0.3')
+        .attr('r', r)
         .attr('fill-opacity', '0')
+
+    domSource.append("path")
+        .attr("d", arc)
+        .attr("fill-opacity", 0.5)
+        .call(d3.drag()
+          .on('drag', this.scale.bind(this)));
 
     domSource.attr("transform", "translate(" + this.x + ", " + this.y + ")")
         .call(d3.drag()
@@ -127,4 +146,3 @@ class CircularSource {
     return domSource.node();
   }
 }
-
